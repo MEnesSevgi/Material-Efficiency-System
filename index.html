@@ -1,15 +1,4 @@
 <!DOCTYPE html>
-<html lang="en">
-
-  <head>
-    <meta charset="UTF-8">
-    <title>Material Efficiency System</title>
-    
-
-  </head>
-    
-  <body>
-  <!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
@@ -102,11 +91,11 @@
 
     /* Yeni Material Efficiency System başlığı için stil */
     .mes-title {
-      font-size: 3.5rem;       /* Çok büyük puntolar */
-      font-weight: 900;        /* Kalın yazı */
+      font-size: 3.5rem;
+      font-weight: 900;
       color: var(--primary-color);
       text-align: center;
-      letter-spacing: 0.15em;  /* Harf aralığı */
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       text-shadow:
         2px 2px 4px rgba(0,0,0,0.15),
@@ -124,25 +113,6 @@
         0 0 15px #1e40af;
       cursor: default;
     }
-
-    /* Eğer animasyonlu degrade isterseniz, aşağıdaki yorumdan çıkarabilirsiniz */
-    /*
-    .mes-title {
-      background: linear-gradient(90deg, #2563eb, #3b82f6, #2563eb);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shine 3s infinite linear;
-    }
-
-    @keyframes shine {
-      0% {
-        background-position: 0% 50%;
-      }
-      100% {
-        background-position: 200% 50%;
-      }
-    }
-    */
 
     h1 {
       font-size: 2.5rem;
@@ -656,8 +626,51 @@
     let currentSort = { column: null, direction: 'asc' };
 
     document.addEventListener('DOMContentLoaded', () => {
+      // Önce paylaşım linki varsa yükle
+      const urlParams = new URLSearchParams(window.location.search);
+      const shareId = urlParams.get('share');
+      if (shareId) {
+        // Paylaşılan listeyi yükle
+        if (loadSharedList(shareId)) {
+          // Paylaşılan liste yüklendi, giriş sayfası gizle
+          document.getElementById('auth-page').style.display = 'none';
+          document.getElementById('app-page').style.display = 'block';
+          return;
+        } else {
+          alert('Paylaşılan liste bulunamadı veya süresi dolmuş olabilir.');
+        }
+      }
+
       checkAuthStatus();
     });
+
+    // Paylaşılan listeyi shareId ile bulup yükler
+    function loadSharedList(shareId) {
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      for (const username in users) {
+        const user = users[username];
+        for (const list of user.stockLists) {
+          const share = list.shares.find(s => s.id === shareId);
+          if (share) {
+            currentList = {
+              ...list,
+              files: share.files // Paylaşılan dosyalar
+            };
+            // Sayfada göstermek için
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('list-detail-page').style.display = 'block';
+            document.getElementById('list-detail-title').textContent = currentList.name + " (Paylaşılan Liste)";
+            document.getElementById('list-detail-subtitle').textContent = `${currentList.files.length} dosya (paylaşılan)`;
+
+            loadListFiles();
+            clearTableAndFilters();
+            document.getElementById('export-excel-btn').style.display = 'none';
+            return true;
+          }
+        }
+      }
+      return false;
+    }
 
     // Auth sekme geçişi
     function switchAuthTab(tab) {
@@ -1060,8 +1073,6 @@
 
       tableHTML += '</tr></thead><tbody>';
 
-      // Burada önemli değişiklik: filtrelenmiş ve sıralanmış verideki satırları göstermek için
-      // filteredData içinde zaten sadece tikli sütunlar var, o yüzden doğrudan kullanıyoruz.
       for (let i = 1; i < filteredData.length; i++) {
         tableHTML += '<tr>';
         filteredData[i].forEach((cell) => {
@@ -1091,13 +1102,11 @@
       if (Object.keys(currentFilters).length === 0) return data;
 
       const headers = data[0];
-      // Sadece tikli sütunların indexlerini al
       const visibleIndexes = headers.reduce((acc, header, idx) => {
         if (currentFilters[header]) acc.push(idx);
         return acc;
       }, []);
 
-      // Başlık satırı dahil filtrele
       return data.map((row) => visibleIndexes.map((i) => row[i]));
     }
 
@@ -1113,17 +1122,15 @@
         headers,
         ...data
           .slice(1)
-          .slice() // kopya
+          .slice()
           .sort((a, b) => {
             const valA = a[headerIndex];
             const valB = b[headerIndex];
 
-            // Sayısal sıralama
             if (!isNaN(valA) && !isNaN(valB)) {
               return currentSort.direction === 'asc' ? valA - valB : valB - valA;
             }
 
-            // Metin sıralama
             return currentSort.direction === 'asc'
               ? String(valA).localeCompare(String(valB))
               : String(valB).localeCompare(String(valA));
@@ -1183,9 +1190,8 @@
       const file = currentList.files[fileIndex];
       if (!file || file.type !== 'word') return;
 
-      // Base64 data URL'den indirilebilir link oluştur
       const link = document.createElement('a');
-      link.href = file.content; // base64 data URL
+      link.href = file.content;
       link.download = file.name;
       document.body.appendChild(link);
       link.click();
@@ -1226,7 +1232,7 @@
       }
     }
 
-    // Paylaşım işlemleri
+    // Paylaşım işlemleri - dosyaları da paylaşım objesine ekle
     function shareList(event, listId) {
       event.stopPropagation();
 
@@ -1240,12 +1246,15 @@
       const shareLink = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
       const shareTime = new Date().toISOString();
 
-      list.shares.push({
+      const shareData = {
         id: shareId,
         link: shareLink,
         created: shareTime,
-        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 gün
-      });
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        files: JSON.parse(JSON.stringify(list.files)) // derin kopya dosyalar
+      };
+
+      list.shares.push(shareData);
 
       localStorage.setItem('users', JSON.stringify(users));
 
@@ -1291,7 +1300,6 @@
         return;
       }
 
-      // Filtrelenmiş ve sıralanmış veriyi al
       let filteredData = filterData(currentTableData);
       filteredData = sortData(filteredData);
 
@@ -1300,7 +1308,6 @@
         return;
       }
 
-      // SheetJS ile dışa aktarım
       const ws = XLSX.utils.aoa_to_sheet(filteredData);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Filtrelenmiş Tablo');
@@ -1310,8 +1317,4 @@
     }
   </script>
 </body>
-</html>
-    
-  </body>
-  
 </html>
