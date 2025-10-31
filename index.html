@@ -1,24 +1,14 @@
-
 <!DOCTYPE html>
-<html lang="en">
-
-  <head>
-    <meta charset="UTF-8">
-    <title>Material Efficiency System</title>
-    
-
-  </head>
-    
-  <body>
-  <!DOCTYPE html>
 <html lang="tr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Stok Yönetim Sistemi</title>
+  <title>Stok Yönetim Sistemi - JSONBin Paylaşım</title>
   <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
+    /* Sizin önceki stiliniz aynen korundu, sadece ufak eklemeler yapıldı */
     :root {
       --primary-color: #2563eb;
       --secondary-color: #64748b;
@@ -103,14 +93,14 @@
 
     /* Yeni Material Efficiency System başlığı için stil */
     .mes-title {
-      font-size: 3.5rem;       /* Çok büyük puntolar */
-      font-weight: 900;        /* Kalın yazı */
+      font-size: 3.5rem;
+      font-weight: 900;
       color: var(--primary-color);
       text-align: center;
-      letter-spacing: 0.15em;  /* Harf aralığı */
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       text-shadow:
-        2px 2px 4px rgba(0,0,0,0.15),
+        2px 2px 4px rgba(0, 0, 0, 0.15),
         0 0 10px var(--primary-color);
       margin-bottom: 0.3rem;
       font-family: 'Segoe UI Black', 'Arial Black', Arial, sans-serif;
@@ -121,29 +111,10 @@
     .mes-title:hover {
       color: #1e40af;
       text-shadow:
-        3px 3px 6px rgba(0,0,0,0.3),
+        3px 3px 6px rgba(0, 0, 0, 0.3),
         0 0 15px #1e40af;
       cursor: default;
     }
-
-    /* Eğer animasyonlu degrade isterseniz, aşağıdaki yorumdan çıkarabilirsiniz */
-    /*
-    .mes-title {
-      background: linear-gradient(90deg, #2563eb, #3b82f6, #2563eb);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shine 3s infinite linear;
-    }
-
-    @keyframes shine {
-      0% {
-        background-position: 0% 50%;
-      }
-      100% {
-        background-position: 200% 50%;
-      }
-    }
-    */
 
     h1 {
       font-size: 2.5rem;
@@ -454,6 +425,7 @@
       0% {
         transform: rotate(0deg);
       }
+
       100% {
         transform: rotate(360deg);
       }
@@ -480,37 +452,19 @@
     }
   </style>
 </head>
+
 <body>
   <!-- Authentication Page -->
-  <div id="auth-page" class="auth-container">
-    <div class="auth-box" role="main" aria-label="Kullanıcı Girişi ve Kayıt">
+  <div id="auth-page" class="auth-container" role="main" aria-label="Kullanıcı Girişi ve Kayıt">
+    <div class="auth-box">
       ----------Material Efficiency System----------
+      <br />
       Producer: Muhammed Enes Sevgi
       <div class="auth-tabs" role="tablist">
-        <div
-          class="auth-tab active"
-          role="tab"
-          tabindex="0"
-          aria-selected="true"
-          aria-controls="login-form"
-          id="login-tab"
-          onclick="switchAuthTab('login')"
-          onkeydown="if(event.key==='Enter'){switchAuthTab('login')}"
-        >
-          Giriş Yap
-        </div>
-        <div
-          class="auth-tab"
-          role="tab"
-          tabindex="0"
-          aria-selected="false"
-          aria-controls="register-form"
-          id="register-tab"
-          onclick="switchAuthTab('register')"
-          onkeydown="if(event.key==='Enter'){switchAuthTab('register')}"
-        >
-          Kayıt Ol
-        </div>
+        <div class="auth-tab active" role="tab" tabindex="0" aria-selected="true" aria-controls="login-form" id="login-tab"
+          onclick="switchAuthTab('login')" onkeydown="if(event.key==='Enter'){switchAuthTab('login')}">Giriş Yap</div>
+        <div class="auth-tab" role="tab" tabindex="0" aria-selected="false" aria-controls="register-form" id="register-tab"
+          onclick="switchAuthTab('register')" onkeydown="if(event.key==='Enter'){switchAuthTab('register')}">Kayıt Ol</div>
       </div>
 
       <div id="login-form" role="tabpanel" aria-labelledby="login-tab">
@@ -649,51 +603,167 @@
   </div>
 
   <script>
+    // JSONBin API ayarları
+    const JSONBIN_API_URL = "https://api.jsonbin.io/v3/b";
+    const MASTER_KEY = "$2a$10$QvhpecAmjwo8IFV0e5l3Ge2Z.JFJ.3hWgZ1eTdcxc1l9vlxZZoXse";
+
     // Global değişkenler
     let currentUser = null;
     let currentList = null;
     let currentTableData = [];
     let currentFilters = {};
-    let currentSort = { column: null, direction: 'asc' };
+    let currentSort = { column: null, direction: "asc" };
+    let isSharedView = false; // Paylaşılan linkten mi açıldı?
 
-    document.addEventListener('DOMContentLoaded', () => {
-      checkAuthStatus();
+    document.addEventListener("DOMContentLoaded", async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const shareBinId = urlParams.get("share");
+
+      if (shareBinId) {
+        // Paylaşılan linkten salt okunur gösterim
+        isSharedView = true;
+        await loadSharedList(shareBinId);
+      } else {
+        checkAuthStatus();
+      }
     });
+
+    // JSONBin'den veri çek
+    async function getBin(binId) {
+      const res = await fetch(`${JSONBIN_API_URL}/${binId}/latest`, {
+        method: "GET",
+        headers: {
+          "X-Master-Key": MASTER_KEY,
+        },
+      });
+      if (!res.ok) throw new Error("JSONBin'den veri çekilemedi");
+      const json = await res.json();
+      return json.record;
+    }
+
+    // JSONBin'de yeni kayıt oluştur
+    async function createBin(data) {
+      const res = await fetch(JSONBIN_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": MASTER_KEY,
+          "X-Bin-Private": "true",
+        },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("JSONBin'e kayıt yapılamadı");
+      const json = await res.json();
+      return json.record.id;
+    }
+
+    // JSONBin'de kayıt güncelle
+    async function updateBin(binId, data) {
+      const res = await fetch(`${JSONBIN_API_URL}/${binId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": MASTER_KEY,
+        },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("JSONBin güncellenemedi");
+    }
+
+    // Paylaşılan listeyi yükle ve göster
+    async function loadSharedList(binId) {
+      try {
+        const data = await getBin(binId);
+        // Salt okunur modda göster
+        document.getElementById("auth-page").style.display = "none";
+        document.getElementById("app-page").style.display = "block";
+        document.getElementById("main-page").style.display = "none";
+        document.getElementById("list-detail-page").style.display = "block";
+
+        document.getElementById("list-detail-title").textContent = "Paylaşılan Liste";
+        document.getElementById("list-detail-subtitle").textContent = "Salt okunur modda görüntüleniyor";
+
+        // Dosyalar ve tablo için uygun yapı
+        currentList = {
+          id: "shared",
+          name: "Paylaşılan Liste",
+          files: data.files || [],
+          binId: binId,
+          created: data.created || "",
+          shares: [],
+        };
+
+        loadListFiles();
+        clearTableAndFilters();
+
+        if (data.files && data.files.length > 0) {
+          // İlk excel dosyasını göster (varsa)
+          const excelIndex = data.files.findIndex((f) => f.type === "excel");
+          if (excelIndex !== -1) {
+            currentTableData = data.files[excelIndex].data;
+            setupColumnFilters(currentTableData[0]);
+            currentSort = { column: null, direction: "asc" };
+            displayTable(currentTableData);
+            document.getElementById("export-excel-btn").style.display = "none";
+          }
+        }
+
+        // Paylaşılan modda düzenleme kapalı
+        disableEditing();
+        return true;
+      } catch (e) {
+        alert("Paylaşılan liste yüklenemedi: " + e.message);
+        showAuthPage();
+        return false;
+      }
+    }
+
+    // Düzenlemeyi devre dışı bırak
+    function disableEditing() {
+      document.getElementById("excel-file").disabled = true;
+      document.getElementById("word-file").disabled = true;
+      document.getElementById("export-excel-btn").disabled = true;
+      document.getElementById("share-btn").disabled = true;
+      document.querySelectorAll(".btn-danger").forEach((btn) => (btn.disabled = true));
+      document.querySelectorAll(".btn-primary").forEach((btn) => {
+        if (btn.id !== "export-excel-btn") btn.disabled = true;
+      });
+    }
 
     // Auth sekme geçişi
     function switchAuthTab(tab) {
-      document.querySelectorAll('.auth-tab').forEach((t) => t.classList.remove('active'));
-      document.querySelector(`.auth-tab:nth-child(${tab === 'login' ? 1 : 2})`).classList.add('active');
+      document.querySelectorAll(".auth-tab").forEach((t) => t.classList.remove("active"));
+      document.querySelector(`.auth-tab:nth-child(${tab === "login" ? 1 : 2})`).classList.add("active");
 
-      document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
-      document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
+      document.getElementById("login-form").style.display = tab === "login" ? "block" : "none";
+      document.getElementById("register-form").style.display = tab === "register" ? "block" : "none";
     }
 
-    // Kayıt olma fonksiyonu
+    // Kayıt olma fonksiyonu (localStorage içinde kullanıcılar, stok listeleri JSONBin'de)
     function register() {
-      const username = document.getElementById('register-username').value.trim();
-      const password = document.getElementById('register-password').value;
-      const confirm = document.getElementById('register-confirm').value;
+      const username = document.getElementById("register-username").value.trim();
+      const password = document.getElementById("register-password").value;
+      const confirm = document.getElementById("register-confirm").value;
 
       if (!username || !password) {
-        alert('Lütfen kullanıcı adı ve şifre giriniz.');
+        alert("Lütfen kullanıcı adı ve şifre giriniz.");
         return;
       }
 
       if (password !== confirm) {
-        alert('Şifreler eşleşmiyor.');
+        alert("Şifreler eşleşmiyor.");
         return;
       }
 
       if (password.length < 4) {
-        alert('Şifre en az 4 karakter olmalıdır.');
+        alert("Şifre en az 4 karakter olmalıdır.");
         return;
       }
 
-      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
 
       if (users[username]) {
-        alert('Bu kullanıcı adı zaten kullanımda.');
+        alert("Bu kullanıcı adı zaten kullanımda.");
         return;
       }
 
@@ -703,44 +773,44 @@
         stockLists: [],
       };
 
-      localStorage.setItem('users', JSON.stringify(users));
-      alert('Kayıt başarılı! Giriş yapabilirsiniz.');
-      switchAuthTab('login');
+      localStorage.setItem("users", JSON.stringify(users));
+      alert("Kayıt başarılı! Giriş yapabilirsiniz.");
+      switchAuthTab("login");
     }
 
     // Giriş yapma fonksiyonu
     function login() {
-      const username = document.getElementById('login-username').value.trim();
-      const password = document.getElementById('login-password').value;
+      const username = document.getElementById("login-username").value.trim();
+      const password = document.getElementById("login-password").value;
 
       if (!username || !password) {
-        alert('Lütfen kullanıcı adı ve şifre giriniz.');
+        alert("Lütfen kullanıcı adı ve şifre giriniz.");
         return;
       }
 
-      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
       const user = users[username];
 
       if (!user || user.password !== password) {
-        alert('Kullanıcı adı veya şifre hatalı.');
+        alert("Kullanıcı adı veya şifre hatalı.");
         return;
       }
 
       currentUser = username;
-      localStorage.setItem('currentUser', username);
+      localStorage.setItem("currentUser", username);
       showAppPage();
     }
 
     // Çıkış yapma fonksiyonu
     function logout() {
       currentUser = null;
-      localStorage.removeItem('currentUser');
+      localStorage.removeItem("currentUser");
       showAuthPage();
     }
 
     // Oturum kontrolü
     function checkAuthStatus() {
-      const savedUser = localStorage.getItem('currentUser');
+      const savedUser = localStorage.getItem("currentUser");
       if (savedUser) {
         currentUser = savedUser;
         showAppPage();
@@ -751,102 +821,109 @@
 
     // Sayfa gösterimleri
     function showAuthPage() {
-      document.getElementById('auth-page').style.display = 'flex';
-      document.getElementById('app-page').style.display = 'none';
+      document.getElementById("auth-page").style.display = "flex";
+      document.getElementById("app-page").style.display = "none";
     }
 
     function showAppPage() {
-      document.getElementById('auth-page').style.display = 'none';
-      document.getElementById('app-page').style.display = 'block';
-      document.getElementById('welcome-user').textContent = currentUser;
-      document.getElementById('current-user').textContent = currentUser;
+      document.getElementById("auth-page").style.display = "none";
+      document.getElementById("app-page").style.display = "block";
+      document.getElementById("welcome-user").textContent = currentUser;
+      document.getElementById("current-user").textContent = currentUser;
       loadStockLists();
     }
 
     // Modal işlemleri
     function showModal(modalId) {
       const modal = document.getElementById(modalId);
-      modal.style.display = 'flex';
-      modal.setAttribute('aria-hidden', 'false');
+      modal.style.display = "flex";
+      modal.setAttribute("aria-hidden", "false");
       // Odak yönetimi
-      const focusable = modal.querySelector('input,button,[tabindex]:not([tabindex="-1"])');
+      const focusable = modal.querySelector("input,button,[tabindex]:not([tabindex='-1'])");
       if (focusable) focusable.focus();
     }
 
     function hideModal(modalId) {
       const modal = document.getElementById(modalId);
-      modal.style.display = 'none';
-      modal.setAttribute('aria-hidden', 'true');
+      modal.style.display = "none";
+      modal.setAttribute("aria-hidden", "true");
     }
 
-    // Yeni stok listesi oluşturma
-    function showCreateListModal() {
-      document.getElementById('list-name').value = '';
-      showModal('create-list-modal');
-    }
-
-    function createStockList() {
-      const listName = document.getElementById('list-name').value.trim();
+    // Yeni stok listesi oluşturma (JSONBin'de boş kayıt açılır)
+    async function createStockList() {
+      const listName = document.getElementById("list-name").value.trim();
 
       if (!listName) {
-        alert('Lütfen bir liste adı giriniz.');
+        alert("Lütfen bir liste adı giriniz.");
         return;
       }
 
-      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
       const user = users[currentUser];
 
       if (user.stockLists.some((list) => list.name.toLowerCase() === listName.toLowerCase())) {
-        alert('Bu isimde bir liste zaten mevcut.');
+        alert("Bu isimde bir liste zaten mevcut.");
         return;
       }
 
-      const newList = {
-        id: Date.now().toString(),
-        name: listName,
-        files: [],
-        created: new Date().toISOString(),
-        shares: [],
-      };
+      try {
+        // JSONBin'de boş yapı oluştur
+        const emptyData = {
+          files: [],
+          created: new Date().toISOString(),
+          shares: [],
+        };
+        const binId = await createBin(emptyData);
 
-      user.stockLists.push(newList);
-      localStorage.setItem('users', JSON.stringify(users));
-      loadStockLists();
-      hideModal('create-list-modal');
+        const newList = {
+          id: Date.now().toString(),
+          name: listName,
+          binId,
+          created: new Date().toISOString(),
+          shares: [],
+        };
 
-      alert('Liste başarıyla oluşturuldu: ' + listName);
+        user.stockLists.push(newList);
+        localStorage.setItem("users", JSON.stringify(users));
+        loadStockLists();
+        hideModal("create-list-modal");
+
+        alert("Liste başarıyla oluşturuldu: " + listName);
+      } catch (e) {
+        alert("Liste oluşturulurken hata oluştu: " + e.message);
+      }
     }
 
-    // Stok listelerini yükleme
-    function loadStockLists() {
-      const container = document.getElementById('stock-lists-container');
-      container.innerHTML = '';
+    // Stok listelerini yükleme (JSONBin binId ile)
+    async function loadStockLists() {
+      const container = document.getElementById("stock-lists-container");
+      container.innerHTML = "";
 
-      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
       const user = users[currentUser];
       const lists = user?.stockLists || [];
 
       if (lists.length === 0) {
-        container.innerHTML = '<p>Henüz hiç stok listesi oluşturulmamış.</p>';
+        container.innerHTML = "<p>Henüz hiç stok listesi oluşturulmamış.</p>";
         return;
       }
 
+      // Liste kartlarını oluştur
       lists.forEach((list) => {
-        const card = document.createElement('div');
-        card.className = 'stock-card';
+        const card = document.createElement("div");
+        card.className = "stock-card";
         card.innerHTML = `
           <button class="share-btn" aria-label="Listeyi paylaş" title="Listeyi paylaş" onclick="shareList(event, '${list.id}')">🔗</button>
           <h3>${list.name}</h3>
-          <p>Oluşturulma: ${new Date(list.created).toLocaleDateString('tr-TR')}</p>
-          <p>Dosya Sayısı: ${list.files.length}</p>
-          ${list.shares.length > 0 ? `<p>Paylaşım: ${list.shares.length} adet</p>` : ''}
+          <p>Oluşturulma: ${new Date(list.created).toLocaleDateString("tr-TR")}</p>
+          ${list.shares.length > 0 ? `<p>Paylaşım: ${list.shares.length} adet</p>` : ""}
         `;
         card.onclick = () => openList(list.id);
         card.tabIndex = 0;
-        card.setAttribute('role', 'button');
-        card.setAttribute('aria-pressed', 'false');
-        card.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-pressed", "false");
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             openList(list.id);
           }
@@ -855,33 +932,41 @@
       });
     }
 
-    // Liste detaylarını açma
-    function openList(listId) {
-      const users = JSON.parse(localStorage.getItem('users') || '{}');
+    // Liste detaylarını açma (JSONBin'den veri çek)
+    async function openList(listId) {
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
       const user = users[currentUser];
       currentList = user.stockLists.find((list) => list.id === listId);
 
       if (!currentList) return;
 
-      document.getElementById('main-page').style.display = 'none';
-      document.getElementById('list-detail-page').style.display = 'block';
-      document.getElementById('list-detail-title').textContent = currentList.name;
-      document.getElementById('list-detail-subtitle').textContent = `${currentList.files.length} dosya, ${currentList.shares.length} paylaşım`;
+      try {
+        const data = await getBin(currentList.binId);
+        currentList.files = data.files || [];
+        currentList.shares = data.shares || [];
 
-      loadListFiles();
-      clearTableAndFilters();
-      document.getElementById('export-excel-btn').style.display = 'none';
+        document.getElementById("main-page").style.display = "none";
+        document.getElementById("list-detail-page").style.display = "block";
+        document.getElementById("list-detail-title").textContent = currentList.name;
+        document.getElementById("list-detail-subtitle").textContent = `${currentList.files.length} dosya, ${currentList.shares.length} paylaşım`;
+
+        loadListFiles();
+        clearTableAndFilters();
+        document.getElementById("export-excel-btn").style.display = "none";
+      } catch (e) {
+        alert("Liste yüklenirken hata oluştu: " + e.message);
+      }
     }
 
     function goBack() {
-      document.getElementById('main-page').style.display = 'block';
-      document.getElementById('list-detail-page').style.display = 'none';
+      document.getElementById("main-page").style.display = "block";
+      document.getElementById("list-detail-page").style.display = "none";
       currentList = null;
       currentTableData = [];
       currentFilters = {};
-      currentSort = { column: null, direction: 'asc' };
+      currentSort = { column: null, direction: "asc" };
       clearTableAndFilters();
-      document.getElementById('export-excel-btn').style.display = 'none';
+      document.getElementById("export-excel-btn").style.display = "none";
     }
 
     function closeList() {
@@ -890,21 +975,21 @@
 
     // Dosyaları listele
     function loadListFiles() {
-      const container = document.getElementById('files-list');
-      container.innerHTML = '';
+      const container = document.getElementById("files-list");
+      container.innerHTML = "";
 
       if (!currentList.files.length) {
-        container.innerHTML = '<p>Henüz hiç dosya yüklenmemiş.</p>';
+        container.innerHTML = "<p>Henüz hiç dosya yüklenmemiş.</p>";
         return;
       }
 
       currentList.files.forEach((file, index) => {
-        const fileItem = document.createElement('div');
-        fileItem.className = 'file-item';
+        const fileItem = document.createElement("div");
+        fileItem.className = "file-item";
         fileItem.style.cssText =
-          'padding: 12px; margin: 8px 0; background: #f8f9fa; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;';
+          "padding: 12px; margin: 8px 0; background: #f8f9fa; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;";
 
-        if (file.type === 'excel') {
+        if (file.type === "excel") {
           fileItem.innerHTML = `
             <span>📊 ${file.name} (${file.data.length - 1} satır)</span>
             <div>
@@ -928,7 +1013,7 @@
 
     // Excel dosyası yükleme
     function handleExcelUpload() {
-      const fileInput = document.getElementById('excel-file');
+      const fileInput = document.getElementById("excel-file");
       const file = fileInput.files[0];
 
       if (!file) return;
@@ -936,47 +1021,42 @@
       showLoading(true);
 
       const reader = new FileReader();
-      reader.onload = function (e) {
+      reader.onload = async function (e) {
         try {
           const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
+          const workbook = XLSX.read(data, { type: "array" });
 
           const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
           const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
 
           const excelFile = {
-            type: 'excel',
+            type: "excel",
             name: file.name,
             data: jsonData,
             uploaded: new Date().toISOString(),
           };
 
-          // Kullanıcı verilerini güncelle
-          const users = JSON.parse(localStorage.getItem('users') || '{}');
-          const user = users[currentUser];
-          const listIndex = user.stockLists.findIndex((list) => list.id === currentList.id);
+          // Dosyayı mevcut listeye ekle ve JSONBin güncelle
+          currentList.files.push(excelFile);
+          await saveCurrentListToBin();
 
-          user.stockLists[listIndex].files.push(excelFile);
-          localStorage.setItem('users', JSON.stringify(users));
-
-          currentList = user.stockLists[listIndex];
           loadListFiles();
 
-          alert('Excel dosyası başarıyla yüklendi!');
+          alert("Excel dosyası başarıyla yüklendi!");
         } catch (error) {
-          alert('Excel dosyası okunurken hata oluştu: ' + error.message);
+          alert("Excel dosyası okunurken hata oluştu: " + error.message);
         } finally {
           showLoading(false);
+          fileInput.value = "";
         }
       };
 
       reader.readAsArrayBuffer(file);
-      fileInput.value = '';
     }
 
     // Word dosyası yükleme - base64 olarak kaydedilir
     function handleWordUpload() {
-      const fileInput = document.getElementById('word-file');
+      const fileInput = document.getElementById("word-file");
       const file = fileInput.files[0];
 
       if (!file) return;
@@ -984,121 +1064,137 @@
       showLoading(true);
 
       const reader = new FileReader();
-      reader.onload = function (e) {
-        const content = e.target.result;
+      reader.onload = async function (e) {
+        try {
+          const content = e.target.result;
 
-        const wordFile = {
-          type: 'word',
-          name: file.name,
-          content: content,
-          uploaded: new Date().toISOString(),
-        };
+          const wordFile = {
+            type: "word",
+            name: file.name,
+            content: content,
+            uploaded: new Date().toISOString(),
+          };
 
-        const users = JSON.parse(localStorage.getItem('users') || '{}');
-        const user = users[currentUser];
-        const listIndex = user.stockLists.findIndex((list) => list.id === currentList.id);
+          currentList.files.push(wordFile);
+          await saveCurrentListToBin();
 
-        user.stockLists[listIndex].files.push(wordFile);
-        localStorage.setItem('users', JSON.stringify(users));
+          loadListFiles();
 
-        currentList = user.stockLists[listIndex];
-        loadListFiles();
-
-        alert('Word dokümanı başarıyla yüklendi!');
-        showLoading(false);
-        fileInput.value = '';
+          alert("Word dokümanı başarıyla yüklendi!");
+        } catch (e) {
+          alert("Word dosyası yüklenirken hata oluştu: " + e.message);
+        } finally {
+          showLoading(false);
+          fileInput.value = "";
+        }
       };
 
       reader.readAsDataURL(file);
     }
 
+    // JSONBin'de mevcut listeyi güncelle
+    async function saveCurrentListToBin() {
+      if (!currentList) return;
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
+      const user = users[currentUser];
+      const listIndex = user.stockLists.findIndex((l) => l.id === currentList.id);
+      if (listIndex === -1) return;
+
+      // Güncel dosyaları ve paylaşımları JSONBin'e kaydet
+      const dataToSave = {
+        files: currentList.files,
+        shares: currentList.shares,
+        created: currentList.created,
+      };
+
+      await updateBin(currentList.binId, dataToSave);
+
+      // LocalStorage güncelle
+      user.stockLists[listIndex] = currentList;
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+
     // Excel verisini göster
     function showExcelData(fileIndex) {
       const file = currentList.files[fileIndex];
-      if (!file || file.type !== 'excel') return;
+      if (!file || file.type !== "excel") return;
 
       showLoading(true);
 
       setTimeout(() => {
         currentTableData = file.data;
         setupColumnFilters(file.data[0]);
-        currentSort = { column: null, direction: 'asc' };
+        currentSort = { column: null, direction: "asc" };
         displayTable(currentTableData);
         showLoading(false);
-        document.getElementById('export-excel-btn').style.display = 'inline-flex';
+        document.getElementById("export-excel-btn").style.display = "inline-flex";
       }, 100);
     }
 
     // Tabloyu göster
     function displayTable(data) {
-      const container = document.getElementById('table-container');
+      const container = document.getElementById("table-container");
       if (!data || data.length === 0) {
-        container.innerHTML = '<p>Gösterilecek veri bulunamadı.</p>';
+        container.innerHTML = "<p>Gösterilecek veri bulunamadı.</p>";
         return;
       }
 
-      // Filtreleme ve sıralama uygula
       let filteredData = filterData(data);
       filteredData = sortData(filteredData);
 
       if (filteredData.length <= 1) {
-        container.innerHTML = '<p>Seçili sütunlarda veri bulunamadı.</p>';
+        container.innerHTML = "<p>Seçili sütunlarda veri bulunamadı.</p>";
         return;
       }
 
-      let tableHTML = '<table><thead><tr>';
+      let tableHTML = "<table><thead><tr>";
 
-      // Sadece tikli sütunlar için başlık
       data[0].forEach((header) => {
         if (currentFilters[header]) {
           const isSorted = currentSort.column === header;
-          const sortClass = isSorted ? `sort-${currentSort.direction}` : '';
+          const sortClass = isSorted ? `sort-${currentSort.direction}` : "";
           tableHTML += `<th class="${sortClass}" tabindex="0" role="columnheader" aria-sort="${
-            isSorted ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'
+            isSorted ? (currentSort.direction === "asc" ? "ascending" : "descending") : "none"
           }" onclick="sortTable('${header}')" onkeydown="if(event.key==='Enter'){sortTable('${header}')}" >${escapeHtml(header)}</th>`;
         }
       });
 
-      tableHTML += '</tr></thead><tbody>';
+      tableHTML += "</tr></thead><tbody>";
 
-      // Burada önemli değişiklik: filtrelenmiş ve sıralanmış verideki satırları göstermek için
-      // filteredData içinde zaten sadece tikli sütunlar var, o yüzden doğrudan kullanıyoruz.
       for (let i = 1; i < filteredData.length; i++) {
-        tableHTML += '<tr>';
+        tableHTML += "<tr>";
         filteredData[i].forEach((cell) => {
-          tableHTML += `<td>${escapeHtml(cell || '')}</td>`;
+          tableHTML += `<td>${escapeHtml(cell || "")}</td>`;
         });
-        tableHTML += '</tr>';
+        tableHTML += "</tr>";
       }
 
-      tableHTML += '</tbody></table>';
+      tableHTML += "</tbody></table>";
       container.innerHTML = tableHTML;
     }
 
     // HTML escape fonksiyonu
     function escapeHtml(text) {
-      if (!text) return '';
+      if (!text) return "";
       return text
         .toString()
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
-    // Filtreleme (sadece tikli sütunları göster)
+    // Filtreleme
     function filterData(data) {
       if (Object.keys(currentFilters).length === 0) return data;
 
       const headers = data[0];
-      // Sadece tikli sütunların indexlerini al
       const visibleIndexes = headers.reduce((acc, header, idx) => {
         if (currentFilters[header]) acc.push(idx);
         return acc;
       }, []);
 
-      // Başlık satırı dahil filtrele
       return data.map((row) => visibleIndexes.map((i) => row[i]));
     }
 
@@ -1114,18 +1210,16 @@
         headers,
         ...data
           .slice(1)
-          .slice() // kopya
+          .slice()
           .sort((a, b) => {
             const valA = a[headerIndex];
             const valB = b[headerIndex];
 
-            // Sayısal sıralama
             if (!isNaN(valA) && !isNaN(valB)) {
-              return currentSort.direction === 'asc' ? valA - valB : valB - valA;
+              return currentSort.direction === "asc" ? valA - valB : valB - valA;
             }
 
-            // Metin sıralama
-            return currentSort.direction === 'asc'
+            return currentSort.direction === "asc"
               ? String(valA).localeCompare(String(valB))
               : String(valB).localeCompare(String(valA));
           }),
@@ -1136,8 +1230,8 @@
 
     // Filtre kontrollerini kur
     function setupColumnFilters(headers) {
-      const filtersContainer = document.getElementById('column-filters');
-      filtersContainer.innerHTML = '';
+      const filtersContainer = document.getElementById("column-filters");
+      filtersContainer.innerHTML = "";
 
       currentFilters = {};
       headers.forEach((header) => {
@@ -1145,8 +1239,8 @@
       });
 
       headers.forEach((header) => {
-        const filterItem = document.createElement('div');
-        filterItem.className = 'filter-item';
+        const filterItem = document.createElement("div");
+        filterItem.className = "filter-item";
         filterItem.innerHTML = `
           <input type="checkbox" id="filter-${header}" checked onchange="toggleColumn('${header}')" />
           <label for="filter-${header}">${escapeHtml(header)}</label>
@@ -1168,10 +1262,10 @@
     // Tablo sıralama
     function sortTable(columnName) {
       if (currentSort.column === columnName) {
-        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        currentSort.direction = currentSort.direction === "asc" ? "desc" : "asc";
       } else {
         currentSort.column = columnName;
-        currentSort.direction = 'asc';
+        currentSort.direction = "asc";
       }
 
       if (currentTableData.length > 0) {
@@ -1182,63 +1276,55 @@
     // Word dosyasını indirme fonksiyonu
     function previewWord(fileIndex) {
       const file = currentList.files[fileIndex];
-      if (!file || file.type !== 'word') return;
+      if (!file || file.type !== "word") return;
 
-      // Base64 data URL'den indirilebilir link oluştur
-      const link = document.createElement('a');
-      link.href = file.content; // base64 data URL
+      const link = document.createElement("a");
+      link.href = file.content;
       link.download = file.name;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
-      alert('Word dosyası indirildi. Dosyayı açmak için bilgisayarınızdaki Word programını kullanabilirsiniz.');
+      alert("Word dosyası indirildi. Dosyayı açmak için bilgisayarınızdaki Word programını kullanabilirsiniz.");
     }
 
     // Ekran görüntüsü alma
     function takeScreenshot() {
       if (currentTableData.length === 0) {
-        alert('Gösterilecek tablo bulunamadı.');
+        alert("Gösterilecek tablo bulunamadı.");
         return;
       }
 
-      html2canvas(document.getElementById('table-container')).then((canvas) => {
-        const link = document.createElement('a');
+      html2canvas(document.getElementById("table-container")).then((canvas) => {
+        const link = document.createElement("a");
         link.download = `stok-tablosu-${currentList.name}-${new Date().toISOString().slice(0, 10)}.png`;
-        link.href = canvas.toDataURL('image/png');
+        link.href = canvas.toDataURL("image/png");
         link.click();
       });
     }
 
     // Dosya silme
-    function deleteFile(fileIndex) {
-      if (confirm('Bu dosyayı silmek istediğinize emin misiniz?')) {
-        const users = JSON.parse(localStorage.getItem('users') || '{}');
-        const user = users[currentUser];
-        const listIndex = user.stockLists.findIndex((list) => list.id === currentList.id);
-
-        user.stockLists[listIndex].files.splice(fileIndex, 1);
-        localStorage.setItem('users', JSON.stringify(users));
-
-        currentList = user.stockLists[listIndex];
-        loadListFiles();
-        clearTableAndFilters();
-        document.getElementById('export-excel-btn').style.display = 'none';
-      }
+    async function deleteFile(fileIndex) {
+      if (!confirm("Bu dosyayı silmek istediğinize emin misiniz?")) return;
+      currentList.files.splice(fileIndex, 1);
+      await saveCurrentListToBin();
+      loadListFiles();
+      clearTableAndFilters();
+      document.getElementById("export-excel-btn").style.display = "none";
     }
 
     // Paylaşım işlemleri
-    function shareList(event, listId) {
+    async function shareList(event, listId) {
       event.stopPropagation();
 
-      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
       const user = users[currentUser];
       const list = user.stockLists.find((l) => l.id === listId);
 
       if (!list) return;
 
       const shareId = Date.now().toString();
-      const shareLink = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
+      const shareLink = `${window.location.origin}${window.location.pathname}?share=${list.binId}`;
       const shareTime = new Date().toISOString();
 
       list.shares.push({
@@ -1248,11 +1334,15 @@
         expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 gün
       });
 
-      localStorage.setItem('users', JSON.stringify(users));
+      // JSONBin'de paylaşım bilgisi güncelle
+      currentList = list;
+      await saveCurrentListToBin();
 
-      document.getElementById('share-link').value = shareLink;
-      document.getElementById('share-time').value = new Date(shareTime).toLocaleString('tr-TR');
-      showModal('share-modal');
+      localStorage.setItem("users", JSON.stringify(users));
+
+      document.getElementById("share-link").value = shareLink;
+      document.getElementById("share-time").value = new Date(shareTime).toLocaleString("tr-TR");
+      showModal("share-modal");
     }
 
     function shareCurrentList() {
@@ -1261,58 +1351,55 @@
     }
 
     function copyShareLink() {
-      const linkInput = document.getElementById('share-link');
+      const linkInput = document.getElementById("share-link");
       linkInput.select();
       linkInput.setSelectionRange(0, 99999);
-      document.execCommand('copy');
-      alert('Link panoya kopyalandı!');
+      document.execCommand("copy");
+      alert("Link panoya kopyalandı!");
     }
 
     // Yükleniyor göstergesi
     function showLoading(show) {
-      const loading = document.getElementById('table-loading');
-      loading.style.display = show ? 'block' : 'none';
-      loading.setAttribute('aria-busy', show ? 'true' : 'false');
+      const loading = document.getElementById("table-loading");
+      loading.style.display = show ? "block" : "none";
+      loading.setAttribute("aria-busy", show ? "true" : "false");
     }
 
     // Tablo ve filtreleri temizle
     function clearTableAndFilters() {
-      document.getElementById('table-container').innerHTML = '';
-      document.getElementById('column-filters').innerHTML = '';
+      document.getElementById("table-container").innerHTML = "";
+      document.getElementById("column-filters").innerHTML = "";
       currentFilters = {};
-      currentSort = { column: null, direction: 'asc' };
+      currentSort = { column: null, direction: "asc" };
       currentTableData = [];
-      document.getElementById('export-excel-btn').style.display = 'none';
+      document.getElementById("export-excel-btn").style.display = "none";
     }
 
     // Filtrelenmiş tabloyu Excel olarak dışa aktar
     function exportFilteredExcel() {
       if (!currentTableData || currentTableData.length === 0) {
-        alert('Dışa aktarılacak tablo bulunamadı.');
+        alert("Dışa aktarılacak tablo bulunamadı.");
         return;
       }
 
-      // Filtrelenmiş ve sıralanmış veriyi al
       let filteredData = filterData(currentTableData);
       filteredData = sortData(filteredData);
 
       if (filteredData.length <= 1) {
-        alert('Dışa aktarılacak veri bulunamadı.');
+        alert("Dışa aktarılacak veri bulunamadı.");
         return;
       }
 
-      // SheetJS ile dışa aktarım
       const ws = XLSX.utils.aoa_to_sheet(filteredData);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Filtrelenmiş Tablo');
+      XLSX.utils.book_append_sheet(wb, ws, "Filtrelenmiş Tablo");
 
-      const fileName = `filtrelenmis-stok-tablosu-${currentList.name}-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      const fileName = `filtrelenmis-stok-tablosu-${currentList.name}-${new Date()
+        .toISOString()
+        .slice(0, 10)}.xlsx`;
       XLSX.writeFile(wb, fileName);
     }
   </script>
 </body>
-</html>
-    
-  </body>
-  
+
 </html>
