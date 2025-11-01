@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>6.8</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stok ve Çalışan Yönetim Sistemi</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #64748b;
+      --accent-color: #f1f5f9;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --warning-color: #f59e0b;
+      --border-color: #e2e8f0;
+      --text-color: #334155;
+      --bg-color: #f8fafc;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+    }
+
+    /* Authentication styles */
+    .auth-header {
+  font-family: 'Segoe UI Black', 'Arial Black', Arial, sans-serif;
+  font-size: 5rem;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-align: center;
+  user-select: none;
+  text-shadow:
+    3px 3px 8px rgba(0,0,0,0.5),
+    0 0 20px #2563eb,
+    0 0 30px #3b82f6;
+  animation: glow 2.5s ease-in-out infinite alternate;
+  max-width: 90vw;
+  margin-bottom: 40px; /* Başlık ile form arası boşluk */
+}
+
+@keyframes glow {
+  from {
+    text-shadow:
+      3px 3px 8px rgba(0,0,0,0.5),
+      0 0 20px #2563eb,
+      0 0 30px #3b82f6;
+    color: #2563eb;
+  }
+  to {
+    text-shadow:
+      3px 3px 15px rgba(0,0,0,0.8),
+      0 0 40px #1e40af,
+      0 0 50px #1e40af;
+    color: #1e40af;
+  }
+}
+
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .auth-box {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .auth-tab {
+      padding: 1rem 2rem;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .auth-tab.active {
+      border-bottom-color: var(--primary-color);
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    
+
+    /* Common styles */
+    header {
+      background: linear-gradient(135deg, var(--primary-color), #1e40af);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Material Efficiency System başlığı için stil */
+    .mes-title {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--primary-color);
+      text-align: center;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-shadow:
+        2px 2px 4px rgba(0,0,0,0.15),
+        0 0 10px var(--primary-color);
+      margin-bottom: 0.3rem;
+      font-family: 'Segoe UI Black', 'Arial Black', Arial, sans-serif;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+
+    .mes-title:hover {
+      color: #1e40af;
+      text-shadow:
+        3px 3px 6px rgba(0,0,0,0.3),
+        0 0 15px #1e40af;
+      cursor: default;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #1e40af;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    .btn-danger {
+      background-color: var(--danger-color);
+      color: white;
+    }
+
+    .btn-success {
+      background-color: var(--success-color);
+      color: white;
+    }
+
+    .btn-warning {
+      background-color: var(--warning-color);
+      color: white;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    /* Stock list styles */
+    .stock-lists {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .stock-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    .stock-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .stock-card h3 {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+
+
+    /* Table styles */
+    .table-container {
+      overflow-x: auto;
+      margin: 1rem 0;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background-color: var(--accent-color);
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+
+    th:hover {
+      background-color: #e2e8f0;
+    }
+
+    th.sort-asc::after {
+      content: ' ↑';
+      font-weight: bold;
+    }
+
+    th.sort-desc::after {
+      content: ' ↓';
+      font-weight: bold;
+    }
+
+    /* Filter controls */
+    .filter-controls {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin: 1rem 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-item input[type='checkbox'] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    /* Navigation */
+    .navigation {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    /* Preview modal */
+    .preview-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.95);
+      z-index: 10001;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .preview-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      width: 90%;
+      height: 80%;
+      overflow-y: auto;
+      position: relative;
+      white-space: pre-wrap;
+      font-family: monospace, monospace;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .preview-close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--danger-color);
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* Action buttons */
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* User info */
+    .user-info {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-weight: 500;
+    }
+
+    /* Loading */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .stock-lists {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Authentication Page -->
+  <div id="auth-page" class="auth-container">
+     <div class="auth-header" aria-hidden="true">Material Efficiency System & Managed Employee System</div>
+    <div class="auth-box" role="main" aria-label="Kullanıcı Girişi ve Kayıt">
+  
+
+     
+      Producer: Muhammed Enes Sevgi
+      <div class="auth-tabs" role="tablist">
+        <div
+          class="auth-tab active"
+          role="tab"
+          tabindex="0"
+          aria-selected="true"
+          aria-controls="login-form"
+          id="login-tab"
+          onclick="switchAuthTab('login')"
+          onkeydown="if(event.key==='Enter'){switchAuthTab('login')}"
+        >
+          Giriş Yap
+        </div>
+        <div
+          class="auth-tab"
+          role="tab"
+          tabindex="0"
+          aria-selected="false"
+          aria-controls="register-form"
+          id="register-tab"
+          onclick="switchAuthTab('register')"
+          onkeydown="if(event.key==='Enter'){switchAuthTab('register')}"
+        >
+          Kayıt Ol
+        </div>
+      </div>
+
+      <div id="login-form" role="tabpanel" aria-labelledby="login-tab">
+        <div class="form-group">
+          <label for="login-username">Kullanıcı Adı</label>
+          <input type="text" id="login-username" placeholder="Kullanıcı adınız" autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Şifre</label>
+          <input type="password" id="login-password" placeholder="Şifreniz" autocomplete="current-password" />
+        </div>
+        <button class="btn btn-primary" onclick="login()" style="width: 100%">Giriş Yap</button>
+      </div>
+
+      <div id="register-form" role="tabpanel" aria-labelledby="register-tab" style="display: none;">
+        <div class="form-group">
+          <label for="register-username">Kullanıcı Adı</label>
+          <input type="text" id="register-username" placeholder="Kullanıcı adı seçin" autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label for="register-password">Şifre</label>
+          <input type="password" id="register-password" placeholder="Şifre oluşturun" autocomplete="new-password" />
+        </div>
+        <div class="form-group">
+          <label for="register-confirm">Şifre Tekrar</label>
+          <input type="password" id="register-confirm" placeholder="Şifreyi tekrar girin" autocomplete="new-password" />
+        </div>
+        <button class="btn btn-success" onclick="register()" style="width: 100%">Kayıt Ol</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Application -->
+  <div id="app-page" style="display: none;">
+    <div class="container" role="main">
+      <div class="user-info" aria-label="Kullanıcı Bilgisi ve Çıkış">
+        <span id="current-user" aria-live="polite">Kullanıcı</span>
+        <button class="btn btn-secondary" onclick="logout()">Çıkış Yap</button>
+      </div>
+
+      <!-- Ana Sayfa -->
+      <div id="main-page">
+        <header>
+          <h1 class="mes-title">Material Efficiency System & Managed Employee System</h1>
+          <p class="subtitle">Hoş geldiniz, <span id="welcome-user">Kullanıcı</span></p>
+        </header>
+
+        <div class="action-buttons">
+          <button class="btn btn-primary" onclick="showCreateListModal('stock')">＋ Yeni Stok Listesi Oluştur</button>
+          <button class="btn btn-primary" onclick="showCreateListModal('employee')">＋ Yeni Çalışan Listesi Oluştur</button>
+        </div>
+
+        <h2>Stok Listelerim</h2>
+        <div id="stock-lists-container" class="stock-lists" aria-live="polite" aria-label="Stok Listeleri">
+          <!-- Dinamik içerik -->
+        </div>
+
+        <h2>Çalışan Listelerim</h2>
+        <div id="employee-lists-container" class="stock-lists" aria-live="polite" aria-label="Çalışan Listeleri">
+          <!-- Dinamik içerik -->
+        </div>
+      </div>
+
+      <!-- Liste Detay Sayfası -->
+      <div id="list-detail-page" style="display: none;">
+        <div class="navigation" role="navigation" aria-label="Sayfa Navigasyonu">
+          <button class="btn btn-secondary" onclick="goBack()">← Geri</button>
+          <button class="btn btn-danger" onclick="closeList()">✕ Kapat</button>
+        </div>
+
+        <header>
+          <h1 id="list-detail-title">Liste Detayları</h1>
+          <p class="subtitle" id="list-detail-subtitle">Verilerinizi yönetin</p>
+        </header>
+
+        <div class="action-buttons">
+          <input type="file" id="excel-file" accept=".xlsx,.xls" style="display: none" onchange="handleExcelUpload()" />
+          <button class="btn btn-primary" onclick="document.getElementById('excel-file').click()">📊 Excel Dosyası Ekle</button>
+
+          <input type="file" id="word-file" accept=".doc,.docx" style="display: none" onchange="handleWordUpload()" />
+          <button class="btn btn-primary" onclick="document.getElementById('word-file').click()">📝 Word Dokümanı Ekle</button>
+
+          <button class="btn btn-success" onclick="takeScreenshot()">📸 Ekran Görüntüsü Al</button>
+        </div>
+
+        <div class="action-buttons" style="margin-bottom: 1rem; gap: 1rem;">
+          <button class="btn btn-primary" onclick="addNewRow()">➕ Yeni Satır Ekle</button>
+          <button class="btn btn-primary" onclick="promptNewColumn()">➕ Yeni Sütun Ekle</button>
+          <button class="btn btn-success" onclick="saveTable()">💾 Tabloyu Kaydet</button>
+        </div>
+
+        <!-- Silme butonu eklendi -->
+        <div class="action-buttons" style="margin-bottom: 1rem;">
+          <button class="btn btn-danger" id="delete-list-btn">Bu Listeyi Sil</button>
+        </div>
+
+        <section class="filter-controls" aria-label="Filtreleme ve Sıralama">
+          <h3>Filtreleme ve Sıralama</h3>
+          <div id="column-filters" class="filter-grid"></div>
+        </section>
+
+        <section id="file-list-container" aria-label="Yüklenen Dosyalar">
+          <h3>Yüklenen Dosyalar</h3>
+          <div id="files-list"></div>
+        </section>
+
+        <div class="action-buttons" style="justify-content:flex-end; margin-top:0;">
+          <button class="btn btn-success" id="export-excel-btn" onclick="exportFilteredExcel()" style="display:none;">📥 Filtrelenmiş Tabloyu Excel Olarak Dışa Aktar</button>
+        </div>
+
+        <div class="loading" id="table-loading" aria-live="polite" aria-busy="false">
+          <div class="spinner" role="status" aria-label="Yükleniyor"></div>
+          <p>Tablo yükleniyor...</p>
+        </div>
+
+        <section id="table-container" class="table-container" tabindex="0" aria-label="Excel Tablosu"></section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal pencereler -->
+  <div id="create-list-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="create-list-title">
+    <div class="modal-content">
+      <h2 id="create-list-title">Yeni Liste Oluştur</h2>
+      <div class="form-group">
+        <label for="list-name">Liste Adı</label>
+        <input type="text" id="list-name" placeholder="Liste adını giriniz" />
+      </div>
+      <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button class="btn btn-primary" onclick="createList()">Oluştur</button>
+        <button class="btn btn-secondary" onclick="hideModal('create-list-modal')">İptal</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global değişkenler
+    let currentUser = null;
+    let currentList = null;
+    let currentTableData = [];
+    let currentFilters = {};
+    let currentSort = { column: null, direction: 'asc' };
+    let currentListType = 'stock'; // 'stock' veya 'employee'
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuthStatus();
+    });
+
+    // Auth sekme geçişi
+    function switchAuthTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach((t) => t.classList.remove('active'));
+      document.querySelector(`.auth-tab:nth-child(${tab === 'login' ? 1 : 2})`).classList.add('active');
+
+      document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+      document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
+    }
+
+    // Kayıt olma fonksiyonu
+    function register() {
+      const username = document.getElementById('register-username').value.trim();
+      const password = document.getElementById('register-password').value;
+      const confirm = document.getElementById('register-confirm').value;
+
+      if (!username || !password) {
+        alert('Lütfen kullanıcı adı ve şifre giriniz.');
+        return;
+      }
+
+      if (password !== confirm) {
+        alert('Şifreler eşleşmiyor.');
+        return;
+      }
+
+      if (password.length < 4) {
+        alert('Şifre en az 4 karakter olmalıdır.');
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+
+      if (users[username]) {
+        alert('Bu kullanıcı adı zaten kullanımda.');
+        return;
+      }
+
+      users[username] = {
+        password: password,
+        createdAt: new Date().toISOString(),
+        stockLists: [],
+        employeeLists: [], // Çalışan listeleri için dizi eklendi
+      };
+
+      localStorage.setItem('users', JSON.stringify(users));
+      alert('Kayıt başarılı! Giriş yapabilirsiniz.');
+      switchAuthTab('login');
+    }
+
+    // Giriş yapma fonksiyonu
+    function login() {
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      if (!username || !password) {
+        alert('Lütfen kullanıcı adı ve şifre giriniz.');
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const user = users[username];
+
+      if (!user || user.password !== password) {
+        alert('Kullanıcı adı veya şifre hatalı.');
+        return;
+      }
+
+      currentUser = username;
+      localStorage.setItem('currentUser', username);
+      showAppPage();
+    }
+
+    // Çıkış yapma fonksiyonu
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('currentUser');
+      showAuthPage();
+    }
+
+    // Oturum kontrolü
+    function checkAuthStatus() {
+      const savedUser = localStorage.getItem('currentUser');
+      if (savedUser) {
+        currentUser = savedUser;
+        showAppPage();
+      } else {
+        showAuthPage();
+      }
+    }
+
+    // Sayfa gösterimleri
+    function showAuthPage() {
+      document.getElementById('auth-page').style.display = 'flex';
+      document.getElementById('app-page').style.display = 'none';
+    }
+
+    function showAppPage() {
+      document.getElementById('auth-page').style.display = 'none';
+      document.getElementById('app-page').style.display = 'block';
+      document.getElementById('welcome-user').textContent = currentUser;
+      document.getElementById('current-user').textContent = currentUser;
+      loadStockLists();
+      loadEmployeeLists();
+    }
+
+    // Modal işlemleri
+    function showModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden', 'false');
+      const focusable = modal.querySelector('input,button,[tabindex]:not([tabindex="-1"])');
+      if (focusable) focusable.focus();
+    }
+
+    function hideModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    // Yeni liste oluşturma modalını göster
+    function showCreateListModal(type) {
+      currentListType = type;
+      const title = type === 'stock' ? 'Yeni Stok Listesi Oluştur' : 'Yeni Çalışan Listesi Oluştur';
+      document.getElementById('create-list-title').textContent = title;
+      document.getElementById('list-name').value = '';
+      showModal('create-list-modal');
+    }
+
+    // Yeni liste oluşturma
+    function createList() {
+      const listName = document.getElementById('list-name').value.trim();
+      const listType = currentListType;
+
+      if (!listName) {
+        alert('Lütfen bir liste adı giriniz.');
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const user = users[currentUser];
+
+      const listArray = listType === 'stock' ? user.stockLists : user.employeeLists;
+
+      if (listArray.some(list => list.name.toLowerCase() === listName.toLowerCase())) {
+        alert('Bu isimde bir liste zaten mevcut.');
+        return;
+      }
+
+      const newList = {
+        id: Date.now().toString(),
+        name: listName,
+        files: [],
+        created: new Date().toISOString(),
+        shares: [],
+      };
+
+      listArray.push(newList);
+      localStorage.setItem('users', JSON.stringify(users));
+
+      if (listType === 'stock') {
+        loadStockLists();
+      } else {
+        loadEmployeeLists();
+      }
+
+      hideModal('create-list-modal');
+      alert('Liste başarıyla oluşturuldu: ' + listName);
+    }
+
+    // Stok listelerini yükleme
+    function loadStockLists() {
+      const container = document.getElementById('stock-lists-container');
+      container.innerHTML = '';
+
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const user = users[currentUser];
+      const lists = user?.stockLists || [];
+
+      if (lists.length === 0) {
+        container.innerHTML = '<p>Henüz hiç stok listesi oluşturulmamış.</p>';
+        return;
+      }
+
+      lists.forEach(list => {
+        const card = document.createElement('div');
+        card.className = 'stock-card';
+        card.innerHTML = `
+          <h3>${list.name}</h3>
+          <p>Oluşturulma: ${new Date(list.created).toLocaleDateString('tr-TR')}</p>
+          <p>Dosya Sayısı: ${list.files.length}</p>
+          ${list.shares.length > 0 ? `<p>Paylaşım: ${list.shares.length} adet</p>` : ''}
+        `;
+        card.onclick = () => openList(list.id, 'stock');
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-pressed', 'false');
+        card.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openList(list.id, 'stock');
+          }
+        });
+        container.appendChild(card);
+      });
+    }
+
+    // Çalışan listelerini yükleme
+    function loadEmployeeLists() {
+      const container = document.getElementById('employee-lists-container');
+      container.innerHTML = '';
+
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const user = users[currentUser];
+      const lists = user?.employeeLists || [];
+
+      if (lists.length === 0) {
+        container.innerHTML = '<p>Henüz hiç çalışan listesi oluşturulmamış.</p>';
+        return;
+      }
+
+      lists.forEach(list => {
+        const card = document.createElement('div');
+        card.className = 'stock-card';
+        card.innerHTML = `
+          <h3>${list.name}</h3>
+          <p>Oluşturulma: ${new Date(list.created).toLocaleDateString('tr-TR')}</p>
+          <p>Dosya Sayısı: ${list.files.length}</p>
+          ${list.shares.length > 0 ? `<p>Paylaşım: ${list.shares.length} adet</p>` : ''}
+        `;
+        card.onclick = () => openList(list.id, 'employee');
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-pressed', 'false');
+        card.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openList(list.id, 'employee');
+          }
+        });
+        container.appendChild(card);
+      });
+    }
+
+    // Liste detaylarını açma
+    function openList(listId, type = currentListType) {
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const user = users[currentUser];
+
+      const listArray = type === 'stock' ? user.stockLists : user.employeeLists;
+      currentList = listArray.find(list => list.id === listId);
+      currentListType = type;
+
+      if (!currentList) return;
+
+      document.getElementById('main-page').style.display = 'none';
+      document.getElementById('list-detail-page').style.display = 'block';
+      document.getElementById('list-detail-title').textContent = currentList.name;
+
+      const subtitle = type === 'stock' ? 'Stok verilerinizi yönetin' : 'Çalışan verilerinizi yönetin';
+      document.getElementById('list-detail-subtitle').textContent = subtitle;
+
+      loadListFiles();
+      clearTableAndFilters();
+      document.getElementById('export-excel-btn').style.display = 'none';
+
+      setupDeleteListButton(); // Silme butonunu etkinleştir
+    }
+
+    // Silme butonuna tıklama olayını kur
+    function setupDeleteListButton() {
+      const btn = document.getElementById('delete-list-btn');
+      if (btn) {
+        btn.onclick = deleteCurrentList;
+      }
+    }
+
+    // Listeyi silme fonksiyonu
+    function deleteCurrentList() {
+      if (!currentList) return;
+
+      if (confirm(`"${currentList.name}" adlı listeyi silmek istediğinize emin misiniz?`)) {
+        const users = JSON.parse(localStorage.getItem('users') || '{}');
+        const user = users[currentUser];
+        if (!user) return;
+
+        const listArray = currentListType === 'stock' ? user.stockLists : user.employeeLists;
+        const listIndex = listArray.findIndex(list => list.id === currentList.id);
+        if (listIndex === -1) return;
+
+        listArray.splice(listIndex, 1); // Listeyi sil
+        localStorage.setItem('users', JSON.stringify(users));
+
+        alert('Liste başarıyla silindi.');
+
+        // Liste detay sayfasını kapat, ana sayfaya dön
+        goBack();
+
+        // Listeleri tekrar yükle
+        if (currentListType === 'stock') {
+          loadStockLists();
+        } else {
+          loadEmployeeLists();
+        }
+      }
+    }
+
+    function goBack() {
+      document.getElementById('main-page').style.display = 'block';
+      document.getElementById('list-detail-page').style.display = 'none';
+      currentList = null;
+      currentTableData = [];
+      currentFilters = {};
+      currentSort = { column: null, direction: 'asc' };
+      clearTableAndFilters();
+      document.getElementById('export-excel-btn').style.display = 'none';
+    }
+
+    function closeList() {
+      goBack();
+    }
+
+    // Dosyaları listele
+    function loadListFiles() {
+      const container = document.getElementById('files-list');
+      container.innerHTML = '';
+
+      if (!currentList.files.length) {
+        container.innerHTML = '<p>Henüz hiç dosya yüklenmemiş.</p>';
+        return;
+      }
+
+      currentList.files.forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        fileItem.style.cssText =
+          'padding: 12px; margin: 8px 0; background: #f8f9fa; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;';
+
+        if (file.type === 'excel') {
+          fileItem.innerHTML = `
+            <span>📊 ${file.name} (${file.data.length - 1} satır)</span>
+            <div>
+              <button class="btn btn-primary" onclick="showExcelData(${index})" aria-label="Excel dosyasını göster">Göster</button>
+              <button class="btn btn-danger" onclick="deleteFile(${index})" aria-label="Dosyayı sil">Sil</button>
+            </div>
+          `;
+        } else {
+          fileItem.innerHTML = `
+            <span>📝 ${file.name}</span>
+            <div>
+              <button class="btn btn-primary" onclick="previewWord(${index})" aria-label="Word dokümanını indir">İndir</button>
+              <button class="btn btn-danger" onclick="deleteFile(${index})" aria-label="Dosyayı sil">Sil</button>
+            </div>
+          `;
+        }
+
+        container.appendChild(fileItem);
+      });
+    }
+
+    // Excel dosyası yükleme
+    function handleExcelUpload() {
+      const fileInput = document.getElementById('excel-file');
+      const file = fileInput.files[0];
+
+      if (!file) return;
+
+      showLoading(true);
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+          const excelFile = {
+            type: 'excel',
+            name: file.name,
+            data: jsonData,
+            uploaded: new Date().toISOString(),
+          };
+
+          const users = JSON.parse(localStorage.getItem('users') || '{}');
+          const user = users[currentUser];
+          const listArray = currentListType === 'stock' ? user.stockLists : user.employeeLists;
+          const listIndex = listArray.findIndex(list => list.id === currentList.id);
+
+          listArray[listIndex].files.push(excelFile);
+          localStorage.setItem('users', JSON.stringify(users));
+
+          currentList = listArray[listIndex];
+          loadListFiles();
+
+          alert('Excel dosyası başarıyla yüklendi!');
+        } catch (error) {
+          alert('Excel dosyası okunurken hata oluştu: ' + error.message);
+        } finally {
+          showLoading(false);
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
+      fileInput.value = '';
+    }
+
+    // Word dosyası yükleme
+    function handleWordUpload() {
+      const fileInput = document.getElementById('word-file');
+      const file = fileInput.files[0];
+
+      if (!file) return;
+
+      showLoading(true);
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const content = e.target.result;
+
+        const wordFile = {
+          type: 'word',
+          name: file.name,
+          content: content,
+          uploaded: new Date().toISOString(),
+        };
+
+        const users = JSON.parse(localStorage.getItem('users') || '{}');
+        const user = users[currentUser];
+        const listArray = currentListType === 'stock' ? user.stockLists : user.employeeLists;
+        const listIndex = listArray.findIndex(list => list.id === currentList.id);
+
+        listArray[listIndex].files.push(wordFile);
+        localStorage.setItem('users', JSON.stringify(users));
+
+        currentList = listArray[listIndex];
+        loadListFiles();
+
+        alert('Word dokümanı başarıyla yüklendi!');
+        showLoading(false);
+        fileInput.value = '';
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    // Excel verisini göster
+    function showExcelData(fileIndex) {
+      const file = currentList.files[fileIndex];
+      if (!file || file.type !== 'excel') return;
+
+      showLoading(true);
+
+      setTimeout(() => {
+        currentTableData = file.data;
+        setupColumnFilters(file.data[0]);
+        currentSort = { column: null, direction: 'asc' };
+        displayTable(currentTableData);
+        showLoading(false);
+        document.getElementById('export-excel-btn').style.display = 'inline-flex';
+      }, 100);
+    }
+
+    // Tabloyu göster
+    function displayTable(data) {
+      const container = document.getElementById('table-container');
+      if (!data || data.length === 0) {
+        container.innerHTML = '<p>Gösterilecek veri bulunamadı.</p>';
+        return;
+      }
+
+      let filteredData = filterData(data);
+      filteredData = sortData(filteredData);
+
+      if (filteredData.length <= 1) {
+        container.innerHTML = '<p>Seçili sütunlarda veri bulunamadı.</p>';
+        return;
+      }
+
+      let tableHTML = '<table><thead><tr>';
+
+      data[0].forEach(header => {
+        if (currentFilters[header]) {
+          const isSorted = currentSort.column === header;
+          const sortClass = isSorted ? `sort-${currentSort.direction}` : '';
+          tableHTML += `<th class="${sortClass}" tabindex="0" role="columnheader" aria-sort="${
+            isSorted ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'
+          }" onclick="sortTable('${header}')" onkeydown="if(event.key==='Enter'){sortTable('${header}')}" >${escapeHtml(header)}</th>`;
+        }
+      });
+
+      tableHTML += '</tr></thead><tbody>';
+
+      for (let i = 1; i < filteredData.length; i++) {
+        tableHTML += '<tr>';
+        filteredData[i].forEach((cell, colIndex) => {
+          tableHTML += `<td ondblclick="makeCellEditable(this, ${i}, ${colIndex})">${escapeHtml(cell || '')}</td>`;
+        });
+        tableHTML += '</tr>';
+      }
+
+      tableHTML += '</tbody></table>';
+      container.innerHTML = tableHTML;
+    }
+
+    // HTML escape fonksiyonu
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text
+        .toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Filtreleme
+    function filterData(data) {
+      if (Object.keys(currentFilters).length === 0) return data;
+
+      const headers = data[0];
+      const visibleIndexes = headers.reduce((acc, header, idx) => {
+        if (currentFilters[header]) acc.push(idx);
+        return acc;
+      }, []);
+
+      return data.map(row => visibleIndexes.map(i => row[i]));
+    }
+
+    // Sıralama
+    function sortData(data) {
+      if (!currentSort.column || data.length <= 1) return data;
+
+      const headerIndex = data[0].indexOf(currentSort.column);
+      if (headerIndex === -1) return data;
+
+      const headers = data[0];
+      const sortedData = [
+        headers,
+        ...data.slice(1).slice().sort((a, b) => {
+          const valA = a[headerIndex];
+          const valB = b[headerIndex];
+
+          if (!isNaN(valA) && !isNaN(valB)) {
+            return currentSort.direction === 'asc' ? valA - valB : valB - valA;
+          }
+
+          return currentSort.direction === 'asc'
+            ? String(valA).localeCompare(String(valB))
+            : String(valB).localeCompare(String(valA));
+        }),
+      ];
+
+      return sortedData;
+    }
+
+    // Filtre kontrollerini kur
+    function setupColumnFilters(headers) {
+      const filtersContainer = document.getElementById('column-filters');
+      filtersContainer.innerHTML = '';
+
+      currentFilters = {};
+      headers.forEach(header => {
+        currentFilters[header] = true;
+      });
+
+      headers.forEach(header => {
+        const filterItem = document.createElement('div');
+        filterItem.className = 'filter-item';
+        filterItem.innerHTML = `
+          <input type="checkbox" id="filter-${header}" checked onchange="toggleColumn('${header}')" />
+          <label for="filter-${header}">${escapeHtml(header)}</label>
+        `;
+        filtersContainer.appendChild(filterItem);
+      });
+    }
+
+    // Sütun gizle/göster
+    function toggleColumn(columnName) {
+      const checkbox = document.getElementById(`filter-${columnName}`);
+      currentFilters[columnName] = checkbox.checked;
+
+      if (currentTableData.length > 0) {
+        displayTable(currentTableData);
+      }
+    }
+
+    // Tablo sıralama
+    function sortTable(columnName) {
+      if (currentSort.column === columnName) {
+        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSort.column = columnName;
+        currentSort.direction = 'asc';
+      }
+
+      if (currentTableData.length > 0) {
+        displayTable(currentTableData);
+      }
+    }
+
+    // Word dosyasını indirme fonksiyonu
+    function previewWord(fileIndex) {
+      const file = currentList.files[fileIndex];
+      if (!file || file.type !== 'word') return;
+
+      const link = document.createElement('a');
+      link.href = file.content;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      alert('Word dosyası indirildi. Dosyayı açmak için bilgisayarınızdaki Word programını kullanabilirsiniz.');
+    }
+
+    // Ekran görüntüsü alma
+    function takeScreenshot() {
+      if (currentTableData.length === 0) {
+        alert('Gösterilecek tablo bulunamadı.');
+        return;
+      }
+
+      html2canvas(document.getElementById('table-container')).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `${currentListType}-tablosu-${currentList.name}-${new Date().toISOString().slice(0, 10)}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+
+    // Dosya silme
+    function deleteFile(fileIndex) {
+      if (confirm('Bu dosyayı silmek istediğinize emin misiniz?')) {
+        const users = JSON.parse(localStorage.getItem('users') || '{}');
+        const user = users[currentUser];
+        const listArray = currentListType === 'stock' ? user.stockLists : user.employeeLists;
+        const listIndex = listArray.findIndex(list => list.id === currentList.id);
+
+        listArray[listIndex].files.splice(fileIndex, 1);
+        localStorage.setItem('users', JSON.stringify(users));
+
+        currentList = listArray[listIndex];
+        loadListFiles();
+        clearTableAndFilters();
+        document.getElementById('export-excel-btn').style.display = 'none';
+      }
+    }
+
+    // Yükleniyor göstergesi
+    function showLoading(show) {
+      const loading = document.getElementById('table-loading');
+      loading.style.display = show ? 'block' : 'none';
+      loading.setAttribute('aria-busy', show ? 'true' : 'false');
+    }
+
+    // Tablo ve filtreleri temizle
+    function clearTableAndFilters() {
+      document.getElementById('table-container').innerHTML = '';
+      document.getElementById('column-filters').innerHTML = '';
+      currentFilters = {};
+      currentSort = { column: null, direction: 'asc' };
+      currentTableData = [];
+      document.getElementById('export-excel-btn').style.display = 'none';
+    }
+
+    // Filtrelenmiş tabloyu Excel olarak dışa aktar
+    function exportFilteredExcel() {
+      if (!currentTableData || currentTableData.length === 0) {
+        alert('Dışa aktarılacak tablo bulunamadı.');
+        return;
+      }
+
+      let filteredData = filterData(currentTableData);
+      filteredData = sortData(filteredData);
+
+      if (filteredData.length <= 1) {
+        alert('Dışa aktarılacak veri bulunamadı.');
+        return;
+      }
+
+      const ws = XLSX.utils.aoa_to_sheet(filteredData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Filtrelenmiş Tablo');
+
+      const fileName = `filtrelenmis-${currentListType}-tablosu-${currentList.name}-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+    }
+
+    // Yeni satır ekle
+    function addNewRow() {
+      if (!currentTableData || currentTableData.length === 0) return;
+
+      const newRow = new Array(currentTableData[0].length).fill('');
+      currentTableData.push(newRow);
+
+      displayTable(currentTableData);
+    }
+
+    // Yeni sütun ekleme için başlık sor
+    function promptNewColumn() {
+      const newColName = prompt('Yeni sütun başlığını giriniz:');
+      if (!newColName) return;
+
+      if (currentTableData[0].includes(newColName)) {
+        alert('Bu sütun zaten mevcut!');
+        return;
+      }
+
+      currentTableData[0].push(newColName);
+
+      for (let i = 1; i < currentTableData.length; i++) {
+        currentTableData[i].push('');
+      }
+
+      setupColumnFilters(currentTableData[0]);
+      displayTable(currentTableData);
+    }
+
+    // Tabloyu kaydet
+    function saveTable() {
+      if (!currentList) {
+        alert('Lütfen önce liste açınız.');
+        return;
+      }
+
+      if (!currentTableData || currentTableData.length === 0) {
+        alert('Kaydedilecek tablo yok.');
+        return;
+      }
+
+      const excelFileIndex = currentList.files.findIndex(f => f.type === 'excel');
+      if (excelFileIndex >= 0) {
+        currentList.files[excelFileIndex].data = currentTableData;
+      } else {
+        currentList.files.push({
+          type: 'excel',
+          name: `Kaydedilen Tablo ${new Date().toLocaleString()}.xlsx`,
+          data: currentTableData,
+          uploaded: new Date().toISOString(),
+        });
+      }
+
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const user = users[currentUser];
+      const listArray = currentListType === 'stock' ? user.stockLists : user.employeeLists;
+      const listIndex = listArray.findIndex(list => list.id === currentList.id);
+      listArray[listIndex] = currentList;
+      localStorage.setItem('users', JSON.stringify(users));
+
+      alert('Tablo başarıyla kaydedildi!');
+    }
+
+    // displayTable fonksiyonu
+    function displayTable(data) {
+      const container = document.getElementById('table-container');
+      if (!data || data.length === 0) {
+        container.innerHTML = '<p>Gösterilecek veri bulunamadı.</p>';
+        return;
+      }
+
+      let filteredData = filterData(data);
+      filteredData = sortData(filteredData);
+
+      if (filteredData.length <= 1) {
+        container.innerHTML = '<p>Seçili sütunlarda veri bulunamadı.</p>';
+        return;
+      }
+
+      let tableHTML = '<table><thead><tr>';
+
+      data[0].forEach(header => {
+        if (currentFilters[header]) {
+          const isSorted = currentSort.column === header;
+          const sortClass = isSorted ? `sort-${currentSort.direction}` : '';
+          tableHTML += `<th class="${sortClass}" tabindex="0" role="columnheader" aria-sort="${
+            isSorted ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'
+          }" onclick="sortTable('${header}')" onkeydown="if(event.key==='Enter'){sortTable('${header}')}" >${escapeHtml(header)}</th>`;
+        }
+      });
+
+      tableHTML += '</tr></thead><tbody>';
+
+      for (let i = 1; i < filteredData.length; i++) {
+        tableHTML += '<tr>';
+        filteredData[i].forEach((cell, colIndex) => {
+          tableHTML += `<td ondblclick="makeCellEditable(this, ${i}, ${colIndex})">${escapeHtml(cell || '')}</td>`;
+        });
+        tableHTML += '</tr>';
+      }
+
+      tableHTML += '</tbody></table>';
+      container.innerHTML = tableHTML;
+    }
+
+    // Hücreyi çift tıklayınca düzenlenebilir yap
+    function makeCellEditable(td, rowIndex, colIndex) {
+      if (td.querySelector('input')) return;
+
+      const oldValue = td.textContent;
+      td.innerHTML = `<input type="text" value="${oldValue}" style="width: 100%; box-sizing: border-box;" />`;
+      const input = td.querySelector('input');
+      input.focus();
+
+      input.addEventListener('blur', () => {
+        const newValue = input.value;
+        td.textContent = newValue;
+
+        if (currentTableData[rowIndex]) {
+          currentTableData[rowIndex][colIndex] = newValue;
+        }
+      });
+
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          input.blur();
+        }
+        if (e.key === 'Escape') {
+          td.textContent = oldValue;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
