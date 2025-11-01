@@ -1,15 +1,4 @@
 <!DOCTYPE html>
-<html lang="en">
-
-  <head>
-    <meta charset="UTF-8">
-    <title>6.8</title>
-    
-
-  </head>
-    
-  <body>
-  <!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
@@ -792,45 +781,54 @@
     }
 
     // Yeni liste oluşturma
-    function createList() {
-      const listName = document.getElementById('list-name').value.trim();
-      const listType = currentListType;
+  Kopyala
+function createList() {
+  const listName = document.getElementById('list-name').value.trim();
+  const listType = currentListType;
 
-      if (!listName) {
-        alert('Lütfen bir liste adı giriniz.');
-        return;
-      }
+  if (!listName) {
+    alert('Lütfen bir liste adı giriniz.');
+    return;
+  }
 
-      const users = JSON.parse(localStorage.getItem('users') || '{}');
-      const user = users[currentUser];
+  const users = JSON.parse(localStorage.getItem('users') || '{}');
+  const user = users[currentUser];
 
-      const listArray = listType === 'stock' ? user.stockLists : user.employeeLists;
+  if (!user) {
+    alert('Kullanıcı bulunamadı!');
+    return;
+  }
 
-      if (listArray.some(list => list.name.toLowerCase() === listName.toLowerCase())) {
-        alert('Bu isimde bir liste zaten mevcut.');
-        return;
-      }
+  user.stockLists = user.stockLists || [];
+  user.employeeLists = user.employeeLists || [];
 
-      const newList = {
-        id: Date.now().toString(),
-        name: listName,
-        files: [],
-        created: new Date().toISOString(),
-        shares: [],
-      };
+  const listArray = listType === 'stock' ? user.stockLists : user.employeeLists;
 
-      listArray.push(newList);
-      localStorage.setItem('users', JSON.stringify(users));
+  if (listArray.some(list => list.name.toLowerCase() === listName.toLowerCase())) {
+    alert('Bu isimde bir liste zaten mevcut.');
+    return;
+  }
 
-      if (listType === 'stock') {
-        loadStockLists();
-      } else {
-        loadEmployeeLists();
-      }
+  const newList = {
+    id: Date.now().toString(),
+    name: listName,
+    files: [],
+    created: new Date().toISOString(),
+    shares: [],
+  };
 
-      hideModal('create-list-modal');
-      alert('Liste başarıyla oluşturuldu: ' + listName);
-    }
+  listArray.push(newList);
+  localStorage.setItem('users', JSON.stringify(users));
+
+  if (listType === 'stock') {
+    loadStockLists();
+  } else {
+    loadEmployeeLists();
+  }
+
+  hideModal('create-list-modal');
+  alert('Liste başarıyla oluşturuldu: ' + listName);
+}
 
     // Stok listelerini yükleme
     function loadStockLists() {
@@ -1488,8 +1486,4 @@
     }
   </script>
 </body>
-</html>
-    
-  </body>
-  
 </html>
