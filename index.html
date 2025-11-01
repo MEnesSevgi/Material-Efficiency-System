@@ -1,12 +1,25 @@
+
 <!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>6.8</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Material Efficiency System - Stok Yönetim Sistemi</title>
+  <title>Stok ve Çalışan Yönetim Sistemi</title>
   <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
+    
     :root {
       --primary-color: #2563eb;
       --secondary-color: #64748b;
@@ -41,47 +54,46 @@
     }
 
     /* Authentication styles */
+    .auth-header {
+  font-family: 'Segoe UI Black', 'Arial Black', Arial, sans-serif;
+  font-size: 5rem;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-align: center;
+  user-select: none;
+  text-shadow:
+    3px 3px 8px rgba(0,0,0,0.5),
+    0 0 20px #2563eb,
+    0 0 30px #3b82f6;
+  animation: glow 2.5s ease-in-out infinite alternate;
+  max-width: 90vw;
+  margin-bottom: 40px; /* Başlık ile form arası boşluk */
+}
+
+@keyframes glow {
+  from {
+    text-shadow:
+      3px 3px 8px rgba(0,0,0,0.5),
+      0 0 20px #2563eb,
+      0 0 30px #3b82f6;
+    color: #2563eb;
+  }
+  to {
+    text-shadow:
+      3px 3px 15px rgba(0,0,0,0.8),
+      0 0 40px #1e40af,
+      0 0 50px #1e40af;
+    color: #1e40af;
+  }
+}
+
     .auth-container {
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      flex-direction: column;
-      gap: 40px;
-    }
-
-    /* Muhteşem başlık üstte */
-    .auth-header {
-      font-family: 'Segoe UI Black', 'Arial Black', Arial, sans-serif;
-      font-size: 5rem;
-      color: white;
-      letter-spacing: 0.2em;
-      text-align: center;
-      user-select: none;
-      text-shadow:
-        3px 3px 8px rgba(0,0,0,0.5),
-        0 0 20px #2563eb,
-        0 0 30px #3b82f6;
-      animation: glow 2.5s ease-in-out infinite alternate;
-      max-width: 90vw;
-    }
-
-    @keyframes glow {
-      from {
-        text-shadow:
-          3px 3px 8px rgba(0,0,0,0.5),
-          0 0 20px #2563eb,
-          0 0 30px #3b82f6;
-        color: #2563eb;
-      }
-      to {
-        text-shadow:
-          3px 3px 15px rgba(0,0,0,0.8),
-          0 0 40px #1e40af,
-          0 0 50px #1e40af;
-        color: #1e40af;
-      }
     }
 
     .auth-box {
@@ -112,6 +124,7 @@
       color: var(--primary-color);
       font-weight: 600;
     }
+    
 
     /* Common styles */
     header {
@@ -124,13 +137,13 @@
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    /* Yeni Material Efficiency System başlığı için stil */
+    /* Material Efficiency System başlığı için stil */
     .mes-title {
-      font-size: 3.5rem;       /* Çok büyük puntolar */
-      font-weight: 900;        /* Kalın yazı */
+      font-size: 3.5rem;
+      font-weight: 900;
       color: var(--primary-color);
       text-align: center;
-      letter-spacing: 0.15em;  /* Harf aralığı */
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       text-shadow:
         2px 2px 4px rgba(0,0,0,0.15),
@@ -282,6 +295,7 @@
       margin-bottom: 1rem;
     }
 
+
     /* Table styles */
     .table-container {
       overflow-x: auto;
@@ -289,7 +303,6 @@
       background: white;
       border-radius: 12px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      padding: 1rem;
     }
 
     table {
@@ -363,52 +376,121 @@
       flex-wrap: wrap;
     }
 
-    /* Editable excel table styles */
-    #editable-table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 1rem;
+    /* Preview modal */
+    .preview-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.95);
+      z-index: 10001;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
 
-    #editable-table th,
-    #editable-table td {
-      border: 1px solid var(--border-color);
-      padding: 8px;
-      text-align: left;
-      min-width: 80px;
+    .preview-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      width: 90%;
+      height: 80%;
+      overflow-y: auto;
+      position: relative;
+      white-space: pre-wrap;
+      font-family: monospace, monospace;
+      font-size: 14px;
+      line-height: 1.4;
     }
 
-    #editable-table th {
-      background-color: var(--accent-color);
+    .preview-close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--danger-color);
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
       cursor: pointer;
-      user-select: none;
+      font-weight: 600;
     }
 
-    #editable-table td[contenteditable="true"] {
-      background-color: #fff;
-      cursor: text;
-    }
-
-    #editable-table td[contenteditable="true"]:focus {
-      outline: 2px solid var(--primary-color);
-      background-color: #e0f0ff;
-    }
-
-    /* Add buttons container */
-    #add-buttons {
-      margin-top: 10px;
+    /* Action buttons */
+    .action-buttons {
       display: flex;
-      gap: 10px;
+      gap: 1rem;
+      margin: 1rem 0;
       flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* User info */
+    .user-info {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-weight: 500;
+    }
+
+    /* Loading */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .stock-lists {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
   <!-- Authentication Page -->
-  <div id="auth-page" class="auth-container" role="main" aria-label="Kullanıcı Girişi ve Kayıt">
-    <div class="auth-header" aria-hidden="true">Material Efficiency System / Producer: M.Enes Sevgi</div>
-    <div class="auth-box" >
-      <div class="auth-tabs" role="tablist" aria-label="Giriş ve Kayıt Sekmeleri">
+  <div id="auth-page" class="auth-container">
+     <div class="auth-header" aria-hidden="true">Material Efficiency System & Managed Employee System</div>
+    <div class="auth-box" role="main" aria-label="Kullanıcı Girişi ve Kayıt">
+  
+
+     
+      Producer: Muhammed Enes Sevgi
+      <div class="auth-tabs" role="tablist">
         <div
           class="auth-tab active"
           role="tab"
@@ -476,16 +558,22 @@
       <!-- Ana Sayfa -->
       <div id="main-page">
         <header>
-          <h1 class="mes-title">Material Efficiency System</h1>
+          <h1 class="mes-title">Material Efficiency System & Managed Employee System</h1>
           <p class="subtitle">Hoş geldiniz, <span id="welcome-user">Kullanıcı</span></p>
         </header>
 
         <div class="action-buttons">
-          <button class="btn btn-primary" onclick="showCreateListModal()">＋ Yeni Stok Listesi Oluştur</button>
+          <button class="btn btn-primary" onclick="showCreateListModal('stock')">＋ Yeni Stok Listesi Oluştur</button>
+          <button class="btn btn-primary" onclick="showCreateListModal('employee')">＋ Yeni Çalışan Listesi Oluştur</button>
         </div>
 
         <h2>Stok Listelerim</h2>
         <div id="stock-lists-container" class="stock-lists" aria-live="polite" aria-label="Stok Listeleri">
+          <!-- Dinamik içerik -->
+        </div>
+
+        <h2>Çalışan Listelerim</h2>
+        <div id="employee-lists-container" class="stock-lists" aria-live="polite" aria-label="Çalışan Listeleri">
           <!-- Dinamik içerik -->
         </div>
       </div>
@@ -499,7 +587,7 @@
 
         <header>
           <h1 id="list-detail-title">Liste Detayları</h1>
-          <p class="subtitle" id="list-detail-subtitle">Stok verilerinizi yönetin</p>
+          <p class="subtitle" id="list-detail-subtitle">Verilerinizi yönetin</p>
         </header>
 
         <div class="action-buttons">
@@ -512,6 +600,17 @@
           <button class="btn btn-success" onclick="takeScreenshot()">📸 Ekran Görüntüsü Al</button>
         </div>
 
+        <div class="action-buttons" style="margin-bottom: 1rem; gap: 1rem;">
+          <button class="btn btn-primary" onclick="addNewRow()">➕ Yeni Satır Ekle</button>
+          <button class="btn btn-primary" onclick="promptNewColumn()">➕ Yeni Sütun Ekle</button>
+          <button class="btn btn-success" onclick="saveTable()">💾 Tabloyu Kaydet</button>
+        </div>
+
+        <!-- Silme butonu eklendi -->
+        <div class="action-buttons" style="margin-bottom: 1rem;">
+          <button class="btn btn-danger" id="delete-list-btn">Bu Listeyi Sil</button>
+        </div>
+
         <section class="filter-controls" aria-label="Filtreleme ve Sıralama">
           <h3>Filtreleme ve Sıralama</h3>
           <div id="column-filters" class="filter-grid"></div>
@@ -522,20 +621,16 @@
           <div id="files-list"></div>
         </section>
 
+        <div class="action-buttons" style="justify-content:flex-end; margin-top:0;">
+          <button class="btn btn-success" id="export-excel-btn" onclick="exportFilteredExcel()" style="display:none;">📥 Filtrelenmiş Tabloyu Excel Olarak Dışa Aktar</button>
+        </div>
+
         <div class="loading" id="table-loading" aria-live="polite" aria-busy="false">
           <div class="spinner" role="status" aria-label="Yükleniyor"></div>
           <p>Tablo yükleniyor...</p>
         </div>
 
         <section id="table-container" class="table-container" tabindex="0" aria-label="Excel Tablosu"></section>
-
-        <!-- Satır ve sütun ekleme butonları -->
-        <div id="add-buttons" aria-label="Satır ve sütun ekleme butonları" style="display:none;">
-          <button class="btn btn-primary" onclick="addRow()">+ Satır Ekle</button>
-          <button class="btn btn-primary" onclick="addColumn()">+ Sütun Ekle</button>
-          <button class="btn btn-success" onclick="saveTableChanges()">Tabloyu Kaydet</button>
-          <button class="btn btn-warning" onclick="exportFilteredExcel()">Excel'i Dışa Aktar</button>
-        </div>
       </div>
     </div>
   </div>
@@ -543,13 +638,13 @@
   <!-- Modal pencereler -->
   <div id="create-list-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="create-list-title">
     <div class="modal-content">
-      <h2 id="create-list-title">Yeni Stok Listesi Oluştur</h2>
+      <h2 id="create-list-title">Yeni Liste Oluştur</h2>
       <div class="form-group">
         <label for="list-name">Liste Adı</label>
         <input type="text" id="list-name" placeholder="Liste adını giriniz" />
       </div>
       <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-        <button class="btn btn-primary" onclick="createStockList()">Oluştur</button>
+        <button class="btn btn-primary" onclick="createList()">Oluştur</button>
         <button class="btn btn-secondary" onclick="hideModal('create-list-modal')">İptal</button>
       </div>
     </div>
@@ -562,6 +657,7 @@
     let currentTableData = [];
     let currentFilters = {};
     let currentSort = { column: null, direction: 'asc' };
+    let currentListType = 'stock'; // 'stock' veya 'employee'
 
     document.addEventListener('DOMContentLoaded', () => {
       checkAuthStatus();
@@ -608,6 +704,7 @@
         password: password,
         createdAt: new Date().toISOString(),
         stockLists: [],
+        employeeLists: [], // Çalışan listeleri için dizi eklendi
       };
 
       localStorage.setItem('users', JSON.stringify(users));
@@ -668,6 +765,7 @@
       document.getElementById('welcome-user').textContent = currentUser;
       document.getElementById('current-user').textContent = currentUser;
       loadStockLists();
+      loadEmployeeLists();
     }
 
     // Modal işlemleri
@@ -685,14 +783,19 @@
       modal.setAttribute('aria-hidden', 'true');
     }
 
-    // Yeni stok listesi oluşturma
-    function showCreateListModal() {
+    // Yeni liste oluşturma modalını göster
+    function showCreateListModal(type) {
+      currentListType = type;
+      const title = type === 'stock' ? 'Yeni Stok Listesi Oluştur' : 'Yeni Çalışan Listesi Oluştur';
+      document.getElementById('create-list-title').textContent = title;
       document.getElementById('list-name').value = '';
       showModal('create-list-modal');
     }
 
-    function createStockList() {
+    // Yeni liste oluşturma
+    function createList() {
       const listName = document.getElementById('list-name').value.trim();
+      const listType = currentListType;
 
       if (!listName) {
         alert('Lütfen bir liste adı giriniz.');
@@ -702,7 +805,9 @@
       const users = JSON.parse(localStorage.getItem('users') || '{}');
       const user = users[currentUser];
 
-      if (user.stockLists.some((list) => list.name.toLowerCase() === listName.toLowerCase())) {
+      const listArray = listType === 'stock' ? user.stockLists : user.employeeLists;
+
+      if (listArray.some(list => list.name.toLowerCase() === listName.toLowerCase())) {
         alert('Bu isimde bir liste zaten mevcut.');
         return;
       }
@@ -713,15 +818,18 @@
         files: [],
         created: new Date().toISOString(),
         shares: [],
-        products: [],
-        stockMovements: [],
       };
 
-      user.stockLists.push(newList);
+      listArray.push(newList);
       localStorage.setItem('users', JSON.stringify(users));
-      loadStockLists();
-      hideModal('create-list-modal');
 
+      if (listType === 'stock') {
+        loadStockLists();
+      } else {
+        loadEmployeeLists();
+      }
+
+      hideModal('create-list-modal');
       alert('Liste başarıyla oluşturuldu: ' + listName);
     }
 
@@ -739,22 +847,60 @@
         return;
       }
 
-      lists.forEach((list) => {
+      lists.forEach(list => {
         const card = document.createElement('div');
         card.className = 'stock-card';
         card.innerHTML = `
           <h3>${list.name}</h3>
           <p>Oluşturulma: ${new Date(list.created).toLocaleDateString('tr-TR')}</p>
           <p>Dosya Sayısı: ${list.files.length}</p>
+          ${list.shares.length > 0 ? `<p>Paylaşım: ${list.shares.length} adet</p>` : ''}
         `;
-        card.onclick = () => openList(list.id);
+        card.onclick = () => openList(list.id, 'stock');
         card.tabIndex = 0;
         card.setAttribute('role', 'button');
         card.setAttribute('aria-pressed', 'false');
-        card.addEventListener('keydown', (e) => {
+        card.addEventListener('keydown', e => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            openList(list.id);
+            openList(list.id, 'stock');
+          }
+        });
+        container.appendChild(card);
+      });
+    }
+
+    // Çalışan listelerini yükleme
+    function loadEmployeeLists() {
+      const container = document.getElementById('employee-lists-container');
+      container.innerHTML = '';
+
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const user = users[currentUser];
+      const lists = user?.employeeLists || [];
+
+      if (lists.length === 0) {
+        container.innerHTML = '<p>Henüz hiç çalışan listesi oluşturulmamış.</p>';
+        return;
+      }
+
+      lists.forEach(list => {
+        const card = document.createElement('div');
+        card.className = 'stock-card';
+        card.innerHTML = `
+          <h3>${list.name}</h3>
+          <p>Oluşturulma: ${new Date(list.created).toLocaleDateString('tr-TR')}</p>
+          <p>Dosya Sayısı: ${list.files.length}</p>
+          ${list.shares.length > 0 ? `<p>Paylaşım: ${list.shares.length} adet</p>` : ''}
+        `;
+        card.onclick = () => openList(list.id, 'employee');
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-pressed', 'false');
+        card.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openList(list.id, 'employee');
           }
         });
         container.appendChild(card);
@@ -762,27 +908,66 @@
     }
 
     // Liste detaylarını açma
-    function openList(listId) {
+    function openList(listId, type = currentListType) {
       const users = JSON.parse(localStorage.getItem('users') || '{}');
       const user = users[currentUser];
-      currentList = user.stockLists.find((list) => list.id === listId);
+
+      const listArray = type === 'stock' ? user.stockLists : user.employeeLists;
+      currentList = listArray.find(list => list.id === listId);
+      currentListType = type;
 
       if (!currentList) return;
-
-      if (!currentList.products) currentList.products = [];
-      if (!currentList.stockMovements) currentList.stockMovements = [];
 
       document.getElementById('main-page').style.display = 'none';
       document.getElementById('list-detail-page').style.display = 'block';
       document.getElementById('list-detail-title').textContent = currentList.name;
-      document.getElementById('list-detail-subtitle').textContent = `${currentList.files.length} dosya`;
+
+      const subtitle = type === 'stock' ? 'Stok verilerinizi yönetin' : 'Çalışan verilerinizi yönetin';
+      document.getElementById('list-detail-subtitle').textContent = subtitle;
 
       loadListFiles();
       clearTableAndFilters();
-      document.getElementById('export-excel-btn')?.style.display && (document.getElementById('export-excel-btn').style.display = 'none');
+      document.getElementById('export-excel-btn').style.display = 'none';
 
-      renderProductsTable();
-      renderStockMovements();
+      setupDeleteListButton(); // Silme butonunu etkinleştir
+    }
+
+    // Silme butonuna tıklama olayını kur
+    function setupDeleteListButton() {
+      const btn = document.getElementById('delete-list-btn');
+      if (btn) {
+        btn.onclick = deleteCurrentList;
+      }
+    }
+
+    // Listeyi silme fonksiyonu
+    function deleteCurrentList() {
+      if (!currentList) return;
+
+      if (confirm(`"${currentList.name}" adlı listeyi silmek istediğinize emin misiniz?`)) {
+        const users = JSON.parse(localStorage.getItem('users') || '{}');
+        const user = users[currentUser];
+        if (!user) return;
+
+        const listArray = currentListType === 'stock' ? user.stockLists : user.employeeLists;
+        const listIndex = listArray.findIndex(list => list.id === currentList.id);
+        if (listIndex === -1) return;
+
+        listArray.splice(listIndex, 1); // Listeyi sil
+        localStorage.setItem('users', JSON.stringify(users));
+
+        alert('Liste başarıyla silindi.');
+
+        // Liste detay sayfasını kapat, ana sayfaya dön
+        goBack();
+
+        // Listeleri tekrar yükle
+        if (currentListType === 'stock') {
+          loadStockLists();
+        } else {
+          loadEmployeeLists();
+        }
+      }
     }
 
     function goBack() {
@@ -793,8 +978,7 @@
       currentFilters = {};
       currentSort = { column: null, direction: 'asc' };
       clearTableAndFilters();
-      document.getElementById('export-excel-btn')?.style.display && (document.getElementById('export-excel-btn').style.display = 'none');
-      document.getElementById('add-buttons').style.display = 'none';
+      document.getElementById('export-excel-btn').style.display = 'none';
     }
 
     function closeList() {
@@ -866,12 +1050,13 @@
 
           const users = JSON.parse(localStorage.getItem('users') || '{}');
           const user = users[currentUser];
-          const listIndex = user.stockLists.findIndex((list) => list.id === currentList.id);
+          const listArray = currentListType === 'stock' ? user.stockLists : user.employeeLists;
+          const listIndex = listArray.findIndex(list => list.id === currentList.id);
 
-          user.stockLists[listIndex].files.push(excelFile);
+          listArray[listIndex].files.push(excelFile);
           localStorage.setItem('users', JSON.stringify(users));
 
-          currentList = user.stockLists[listIndex];
+          currentList = listArray[listIndex];
           loadListFiles();
 
           alert('Excel dosyası başarıyla yüklendi!');
@@ -886,7 +1071,7 @@
       fileInput.value = '';
     }
 
-    // Word dosyası yükleme - base64 olarak kaydedilir
+    // Word dosyası yükleme
     function handleWordUpload() {
       const fileInput = document.getElementById('word-file');
       const file = fileInput.files[0];
@@ -908,12 +1093,13 @@
 
         const users = JSON.parse(localStorage.getItem('users') || '{}');
         const user = users[currentUser];
-        const listIndex = user.stockLists.findIndex((list) => list.id === currentList.id);
+        const listArray = currentListType === 'stock' ? user.stockLists : user.employeeLists;
+        const listIndex = listArray.findIndex(list => list.id === currentList.id);
 
-        user.stockLists[listIndex].files.push(wordFile);
+        listArray[listIndex].files.push(wordFile);
         localStorage.setItem('users', JSON.stringify(users));
 
-        currentList = user.stockLists[listIndex];
+        currentList = listArray[listIndex];
         loadListFiles();
 
         alert('Word dokümanı başarıyla yüklendi!');
@@ -924,7 +1110,7 @@
       reader.readAsDataURL(file);
     }
 
-    // Excel verisini göster (düzenlenebilir tablo ile)
+    // Excel verisini göster
     function showExcelData(fileIndex) {
       const file = currentList.files[fileIndex];
       if (!file || file.type !== 'excel') return;
@@ -937,16 +1123,15 @@
         currentSort = { column: null, direction: 'asc' };
         displayTable(currentTableData);
         showLoading(false);
-        document.getElementById('add-buttons').style.display = 'flex';
+        document.getElementById('export-excel-btn').style.display = 'inline-flex';
       }, 100);
     }
 
-    // Tabloyu göster (düzenlenebilir hücrelerle)
+    // Tabloyu göster
     function displayTable(data) {
       const container = document.getElementById('table-container');
       if (!data || data.length === 0) {
         container.innerHTML = '<p>Gösterilecek veri bulunamadı.</p>';
-        document.getElementById('add-buttons').style.display = 'none';
         return;
       }
 
@@ -955,13 +1140,12 @@
 
       if (filteredData.length <= 1) {
         container.innerHTML = '<p>Seçili sütunlarda veri bulunamadı.</p>';
-        document.getElementById('add-buttons').style.display = 'none';
         return;
       }
 
-      let tableHTML = '<table id="editable-table" aria-label="Düzenlenebilir Excel Tablosu"><thead><tr>';
+      let tableHTML = '<table><thead><tr>';
 
-      filteredData[0].forEach((header) => {
+      data[0].forEach(header => {
         if (currentFilters[header]) {
           const isSorted = currentSort.column === header;
           const sortClass = isSorted ? `sort-${currentSort.direction}` : '';
@@ -975,103 +1159,14 @@
 
       for (let i = 1; i < filteredData.length; i++) {
         tableHTML += '<tr>';
-        filteredData[i].forEach((cell) => {
-          tableHTML += `<td contenteditable="true">${escapeHtml(cell || '')}</td>`;
+        filteredData[i].forEach((cell, colIndex) => {
+          tableHTML += `<td ondblclick="makeCellEditable(this, ${i}, ${colIndex})">${escapeHtml(cell || '')}</td>`;
         });
         tableHTML += '</tr>';
       }
 
       tableHTML += '</tbody></table>';
-
       container.innerHTML = tableHTML;
-    }
-
-    // Satır ekleme
-    function addRow() {
-      if (!currentTableData || currentTableData.length === 0) return;
-
-      // Yeni boş satır: sütun sayısı kadar boş string
-      const colCount = currentTableData[0].length;
-      const newRow = new Array(colCount).fill('');
-      currentTableData.push(newRow);
-
-      displayTable(currentTableData);
-    }
-
-    // Sütun ekleme (kullanıcıdan başlık alarak)
-    function addColumn() {
-      if (!currentTableData || currentTableData.length === 0) return;
-
-      let newHeader = prompt('Yeni sütun başlığını giriniz:');
-      if (newHeader === null) return; // İptal edildi
-      newHeader = newHeader.trim();
-      if (!newHeader) {
-        alert('Başlık boş olamaz.');
-        return;
-      }
-
-      // Başlık zaten varsa uyar
-      if (currentTableData[0].includes(newHeader)) {
-        alert('Bu başlık zaten mevcut.');
-        return;
-      }
-
-      // Başlığı ekle
-      currentTableData[0].push(newHeader);
-
-      // Diğer satırlara boş hücre ekle
-      for (let i = 1; i < currentTableData.length; i++) {
-        currentTableData[i].push('');
-      }
-
-      // Filtrelerde yeni sütunu aktif yap
-      currentFilters[newHeader] = true;
-
-      setupColumnFilters(currentTableData[0]);
-      displayTable(currentTableData);
-    }
-
-    // Tablo kaydetme fonksiyonu
-    function saveTableChanges() {
-      const table = document.getElementById('editable-table');
-      if (!table) return;
-
-      const rows = table.querySelectorAll('tr');
-      const newData = [];
-
-      rows.forEach((row, rowIndex) => {
-        const cells = row.querySelectorAll(rowIndex === 0 ? 'th' : 'td');
-        const rowData = [];
-        cells.forEach(cell => {
-          rowData.push(cell.textContent.trim());
-        });
-        newData.push(rowData);
-      });
-
-      const excelFile = currentList.files.find(f => f.type === 'excel');
-      if (!excelFile) {
-        alert('Excel dosyası bulunamadı.');
-        return;
-      }
-
-      excelFile.data = newData;
-      currentTableData = newData;
-
-      const users = JSON.parse(localStorage.getItem('users') || '{}');
-      const user = users[currentUser];
-      const listIndex = user.stockLists.findIndex(list => list.id === currentList.id);
-
-      const fileIndex = user.stockLists[listIndex].files.findIndex(f => f.name === excelFile.name && f.type === 'excel');
-
-      if (fileIndex === -1) {
-        alert('Dosya bulunamadı.');
-        return;
-      }
-
-      user.stockLists[listIndex].files[fileIndex].data = newData;
-      localStorage.setItem('users', JSON.stringify(users));
-
-      alert('Tablo başarıyla kaydedildi!');
     }
 
     // HTML escape fonksiyonu
@@ -1086,7 +1181,7 @@
         .replace(/'/g, '&#039;');
     }
 
-    // Filtreleme (sadece tikli sütunları göster)
+    // Filtreleme
     function filterData(data) {
       if (Object.keys(currentFilters).length === 0) return data;
 
@@ -1096,7 +1191,7 @@
         return acc;
       }, []);
 
-      return data.map((row) => visibleIndexes.map((i) => row[i]));
+      return data.map(row => visibleIndexes.map(i => row[i]));
     }
 
     // Sıralama
@@ -1109,21 +1204,18 @@
       const headers = data[0];
       const sortedData = [
         headers,
-        ...data
-          .slice(1)
-          .slice()
-          .sort((a, b) => {
-            const valA = a[headerIndex];
-            const valB = b[headerIndex];
+        ...data.slice(1).slice().sort((a, b) => {
+          const valA = a[headerIndex];
+          const valB = b[headerIndex];
 
-            if (!isNaN(valA) && !isNaN(valB)) {
-              return currentSort.direction === 'asc' ? valA - valB : valB - valA;
-            }
+          if (!isNaN(valA) && !isNaN(valB)) {
+            return currentSort.direction === 'asc' ? valA - valB : valB - valA;
+          }
 
-            return currentSort.direction === 'asc'
-              ? String(valA).localeCompare(String(valB))
-              : String(valB).localeCompare(String(valA));
-          }),
+          return currentSort.direction === 'asc'
+            ? String(valA).localeCompare(String(valB))
+            : String(valB).localeCompare(String(valA));
+        }),
       ];
 
       return sortedData;
@@ -1135,11 +1227,11 @@
       filtersContainer.innerHTML = '';
 
       currentFilters = {};
-      headers.forEach((header) => {
+      headers.forEach(header => {
         currentFilters[header] = true;
       });
 
-      headers.forEach((header) => {
+      headers.forEach(header => {
         const filterItem = document.createElement('div');
         filterItem.className = 'filter-item';
         filterItem.innerHTML = `
@@ -1196,9 +1288,9 @@
         return;
       }
 
-      html2canvas(document.getElementById('table-container')).then((canvas) => {
+      html2canvas(document.getElementById('table-container')).then(canvas => {
         const link = document.createElement('a');
-        link.download = `stok-tablosu-${currentList.name}-${new Date().toISOString().slice(0, 10)}.png`;
+        link.download = `${currentListType}-tablosu-${currentList.name}-${new Date().toISOString().slice(0, 10)}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
       });
@@ -1209,15 +1301,16 @@
       if (confirm('Bu dosyayı silmek istediğinize emin misiniz?')) {
         const users = JSON.parse(localStorage.getItem('users') || '{}');
         const user = users[currentUser];
-        const listIndex = user.stockLists.findIndex((list) => list.id === currentList.id);
+        const listArray = currentListType === 'stock' ? user.stockLists : user.employeeLists;
+        const listIndex = listArray.findIndex(list => list.id === currentList.id);
 
-        user.stockLists[listIndex].files.splice(fileIndex, 1);
+        listArray[listIndex].files.splice(fileIndex, 1);
         localStorage.setItem('users', JSON.stringify(users));
 
-        currentList = user.stockLists[listIndex];
+        currentList = listArray[listIndex];
         loadListFiles();
         clearTableAndFilters();
-        document.getElementById('add-buttons').style.display = 'none';
+        document.getElementById('export-excel-btn').style.display = 'none';
       }
     }
 
@@ -1235,10 +1328,10 @@
       currentFilters = {};
       currentSort = { column: null, direction: 'asc' };
       currentTableData = [];
-      document.getElementById('add-buttons').style.display = 'none';
+      document.getElementById('export-excel-btn').style.display = 'none';
     }
 
-    // Excel dışa aktarma
+    // Filtrelenmiş tabloyu Excel olarak dışa aktar
     function exportFilteredExcel() {
       if (!currentTableData || currentTableData.length === 0) {
         alert('Dışa aktarılacak tablo bulunamadı.');
@@ -1257,14 +1350,147 @@
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Filtrelenmiş Tablo');
 
-      const fileName = `filtrelenmis-stok-tablosu-${currentList.name}-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      const fileName = `filtrelenmis-${currentListType}-tablosu-${currentList.name}-${new Date().toISOString().slice(0, 10)}.xlsx`;
       XLSX.writeFile(wb, fileName);
     }
 
-    // --- Aşağıdaki ürün ve hareketler ile ilgili fonksiyonlar kaldırıldı ---
-    function renderProductsTable() {}
-    function updateStock() {}
-    function renderStockMovements() {}
+    // Yeni satır ekle
+    function addNewRow() {
+      if (!currentTableData || currentTableData.length === 0) return;
+
+      const newRow = new Array(currentTableData[0].length).fill('');
+      currentTableData.push(newRow);
+
+      displayTable(currentTableData);
+    }
+
+    // Yeni sütun ekleme için başlık sor
+    function promptNewColumn() {
+      const newColName = prompt('Yeni sütun başlığını giriniz:');
+      if (!newColName) return;
+
+      if (currentTableData[0].includes(newColName)) {
+        alert('Bu sütun zaten mevcut!');
+        return;
+      }
+
+      currentTableData[0].push(newColName);
+
+      for (let i = 1; i < currentTableData.length; i++) {
+        currentTableData[i].push('');
+      }
+
+      setupColumnFilters(currentTableData[0]);
+      displayTable(currentTableData);
+    }
+
+    // Tabloyu kaydet
+    function saveTable() {
+      if (!currentList) {
+        alert('Lütfen önce liste açınız.');
+        return;
+      }
+
+      if (!currentTableData || currentTableData.length === 0) {
+        alert('Kaydedilecek tablo yok.');
+        return;
+      }
+
+      const excelFileIndex = currentList.files.findIndex(f => f.type === 'excel');
+      if (excelFileIndex >= 0) {
+        currentList.files[excelFileIndex].data = currentTableData;
+      } else {
+        currentList.files.push({
+          type: 'excel',
+          name: `Kaydedilen Tablo ${new Date().toLocaleString()}.xlsx`,
+          data: currentTableData,
+          uploaded: new Date().toISOString(),
+        });
+      }
+
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const user = users[currentUser];
+      const listArray = currentListType === 'stock' ? user.stockLists : user.employeeLists;
+      const listIndex = listArray.findIndex(list => list.id === currentList.id);
+      listArray[listIndex] = currentList;
+      localStorage.setItem('users', JSON.stringify(users));
+
+      alert('Tablo başarıyla kaydedildi!');
+    }
+
+    // displayTable fonksiyonu
+    function displayTable(data) {
+      const container = document.getElementById('table-container');
+      if (!data || data.length === 0) {
+        container.innerHTML = '<p>Gösterilecek veri bulunamadı.</p>';
+        return;
+      }
+
+      let filteredData = filterData(data);
+      filteredData = sortData(filteredData);
+
+      if (filteredData.length <= 1) {
+        container.innerHTML = '<p>Seçili sütunlarda veri bulunamadı.</p>';
+        return;
+      }
+
+      let tableHTML = '<table><thead><tr>';
+
+      data[0].forEach(header => {
+        if (currentFilters[header]) {
+          const isSorted = currentSort.column === header;
+          const sortClass = isSorted ? `sort-${currentSort.direction}` : '';
+          tableHTML += `<th class="${sortClass}" tabindex="0" role="columnheader" aria-sort="${
+            isSorted ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'
+          }" onclick="sortTable('${header}')" onkeydown="if(event.key==='Enter'){sortTable('${header}')}" >${escapeHtml(header)}</th>`;
+        }
+      });
+
+      tableHTML += '</tr></thead><tbody>';
+
+      for (let i = 1; i < filteredData.length; i++) {
+        tableHTML += '<tr>';
+        filteredData[i].forEach((cell, colIndex) => {
+          tableHTML += `<td ondblclick="makeCellEditable(this, ${i}, ${colIndex})">${escapeHtml(cell || '')}</td>`;
+        });
+        tableHTML += '</tr>';
+      }
+
+      tableHTML += '</tbody></table>';
+      container.innerHTML = tableHTML;
+    }
+
+    // Hücreyi çift tıklayınca düzenlenebilir yap
+    function makeCellEditable(td, rowIndex, colIndex) {
+      if (td.querySelector('input')) return;
+
+      const oldValue = td.textContent;
+      td.innerHTML = `<input type="text" value="${oldValue}" style="width: 100%; box-sizing: border-box;" />`;
+      const input = td.querySelector('input');
+      input.focus();
+
+      input.addEventListener('blur', () => {
+        const newValue = input.value;
+        td.textContent = newValue;
+
+        if (currentTableData[rowIndex]) {
+          currentTableData[rowIndex][colIndex] = newValue;
+        }
+      });
+
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          input.blur();
+        }
+        if (e.key === 'Escape') {
+          td.textContent = oldValue;
+        }
+      });
+    }
   </script>
 </body>
+</html>
+    
+  </body>
+  
 </html>
