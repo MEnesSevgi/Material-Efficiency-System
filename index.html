@@ -1,4 +1,16 @@
+
 <!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>7</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
@@ -46,7 +58,7 @@
   font-family: 'Segoe UI Black', 'Arial Black', Arial, sans-serif;
   font-size: 5rem;
   color: white;
-  
+  text-transform: uppercase;
   letter-spacing: 0.2em;
   text-align: center;
   user-select: none;
@@ -132,7 +144,7 @@
       color: var(--primary-color);
       text-align: center;
       letter-spacing: 0.15em;
-      
+      text-transform: uppercase;
       text-shadow:
         2px 2px 4px rgba(0,0,0,0.15),
         0 0 10px var(--primary-color);
@@ -335,25 +347,39 @@
       border-radius: 12px;
       margin: 1rem 0;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
     .filter-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 1rem;
       margin-top: 1rem;
+      width: 100%;
     }
 
     .filter-item {
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      flex-wrap: nowrap;
     }
 
     .filter-item input[type='checkbox'] {
       width: 18px;
       height: 18px;
       cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .filter-item input[type='text'] {
+      flex: 1;
+      padding: 4px 8px;
+      font-size: 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
     }
 
     /* Navigation */
@@ -475,7 +501,6 @@
      <div class="auth-header" aria-hidden="true">Material Efficiency System & Managed Employee System</div>
     <div class="auth-box" role="main" aria-label="Kullanıcı Girişi ve Kayıt">
   
-
      
       Producer: Muhammed Enes Sevgi
       <div class="auth-tabs" role="tablist">
@@ -600,7 +625,7 @@
         </div>
 
         <section class="filter-controls" aria-label="Filtreleme ve Sıralama">
-          <h3>Filtreleme ve Sıralama</h3>
+          <h3>Filtreleme ve Sütun Göster/Gizle</h3>
           <div id="column-filters" class="filter-grid"></div>
         </section>
 
@@ -781,54 +806,53 @@
     }
 
     // Yeni liste oluşturma
-  Kopyala
-function createList() {
-  const listName = document.getElementById('list-name').value.trim();
-  const listType = currentListType;
+    function createList() {
+      const listName = document.getElementById('list-name').value.trim();
+      const listType = currentListType;
 
-  if (!listName) {
-    alert('Lütfen bir liste adı giriniz.');
-    return;
-  }
+      if (!listName) {
+        alert('Lütfen bir liste adı giriniz.');
+        return;
+      }
 
-  const users = JSON.parse(localStorage.getItem('users') || '{}');
-  const user = users[currentUser];
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const user = users[currentUser];
 
-  if (!user) {
-    alert('Kullanıcı bulunamadı!');
-    return;
-  }
+      if (!user) {
+        alert('Kullanıcı bulunamadı!');
+        return;
+      }
 
-  user.stockLists = user.stockLists || [];
-  user.employeeLists = user.employeeLists || [];
+      user.stockLists = user.stockLists || [];
+      user.employeeLists = user.employeeLists || [];
 
-  const listArray = listType === 'stock' ? user.stockLists : user.employeeLists;
+      const listArray = listType === 'stock' ? user.stockLists : user.employeeLists;
 
-  if (listArray.some(list => list.name.toLowerCase() === listName.toLowerCase())) {
-    alert('Bu isimde bir liste zaten mevcut.');
-    return;
-  }
+      if (listArray.some(list => list.name.toLowerCase() === listName.toLowerCase())) {
+        alert('Bu isimde bir liste zaten mevcut.');
+        return;
+      }
 
-  const newList = {
-    id: Date.now().toString(),
-    name: listName,
-    files: [],
-    created: new Date().toISOString(),
-    shares: [],
-  };
+      const newList = {
+        id: Date.now().toString(),
+        name: listName,
+        files: [],
+        created: new Date().toISOString(),
+        shares: [],
+      };
 
-  listArray.push(newList);
-  localStorage.setItem('users', JSON.stringify(users));
+      listArray.push(newList);
+      localStorage.setItem('users', JSON.stringify(users));
 
-  if (listType === 'stock') {
-    loadStockLists();
-  } else {
-    loadEmployeeLists();
-  }
+      if (listType === 'stock') {
+        loadStockLists();
+      } else {
+        loadEmployeeLists();
+      }
 
-  hideModal('create-list-modal');
-  alert('Liste başarıyla oluşturuldu: ' + listName);
-}
+      hideModal('create-list-modal');
+      alert('Liste başarıyla oluşturuldu: ' + listName);
+    }
 
     // Stok listelerini yükleme
     function loadStockLists() {
@@ -1143,7 +1167,7 @@ function createList() {
       let tableHTML = '<table><thead><tr>';
 
       data[0].forEach(header => {
-        if (currentFilters[header]) {
+        if (currentFilters[header] && currentFilters[header].visible) {
           const isSorted = currentSort.column === header;
           const sortClass = isSorted ? `sort-${currentSort.direction}` : '';
           tableHTML += `<th class="${sortClass}" tabindex="0" role="columnheader" aria-sort="${
@@ -1180,15 +1204,32 @@ function createList() {
 
     // Filtreleme
     function filterData(data) {
-      if (Object.keys(currentFilters).length === 0) return data;
+      if (!data || data.length === 0) return data;
 
       const headers = data[0];
       const visibleIndexes = headers.reduce((acc, header, idx) => {
-        if (currentFilters[header]) acc.push(idx);
+        if (currentFilters[header] && currentFilters[header].visible) acc.push(idx);
         return acc;
       }, []);
 
-      return data.map(row => visibleIndexes.map(i => row[i]));
+      // Filtreleme yaparken her satırın tüm sütunlar için filtre değerlerini kontrol et
+      const filteredRows = data.filter((row, rowIndex) => {
+        if (rowIndex === 0) return true; // başlık satırı her zaman gösterilir
+
+        for (let i = 0; i < headers.length; i++) {
+          const header = headers[i];
+          if (currentFilters[header]) {
+            const filterVal = currentFilters[header].filterValue;
+            if (filterVal && !String(row[i]).toLowerCase().includes(filterVal)) {
+              return false; // filtreleniyor
+            }
+          }
+        }
+        return true;
+      });
+
+      // Sadece görünür sütunları döndür
+      return filteredRows.map(row => visibleIndexes.map(i => row[i]));
     }
 
     // Sıralama
@@ -1218,22 +1259,23 @@ function createList() {
       return sortedData;
     }
 
-    // Filtre kontrollerini kur
+    // Filtre kontrollerini kur (sütun görünürlük ve filtre inputları)
     function setupColumnFilters(headers) {
       const filtersContainer = document.getElementById('column-filters');
       filtersContainer.innerHTML = '';
 
       currentFilters = {};
       headers.forEach(header => {
-        currentFilters[header] = true;
+        currentFilters[header] = { visible: true, filterValue: '' };
       });
 
       headers.forEach(header => {
         const filterItem = document.createElement('div');
         filterItem.className = 'filter-item';
         filterItem.innerHTML = `
-          <input type="checkbox" id="filter-${header}" checked onchange="toggleColumn('${header}')" />
-          <label for="filter-${header}">${escapeHtml(header)}</label>
+          <input type="checkbox" id="filter-visible-${header}" checked onchange="toggleColumn('${header}')" />
+          <label for="filter-visible-${header}">${escapeHtml(header)}</label>
+          <input type="text" placeholder="Filtrele..." id="filter-text-${header}" oninput="filterByColumn('${header}', this.value)" aria-label="${escapeHtml(header)} sütunu için filtre" />
         `;
         filtersContainer.appendChild(filterItem);
       });
@@ -1241,12 +1283,20 @@ function createList() {
 
     // Sütun gizle/göster
     function toggleColumn(columnName) {
-      const checkbox = document.getElementById(`filter-${columnName}`);
-      currentFilters[columnName] = checkbox.checked;
+      const checkbox = document.getElementById(`filter-visible-${columnName}`);
+      if (!currentFilters[columnName]) return;
+      currentFilters[columnName].visible = checkbox.checked;
 
       if (currentTableData.length > 0) {
         displayTable(currentTableData);
       }
+    }
+
+    // Sütun bazlı filtreleme (metin arama)
+    function filterByColumn(columnName, value) {
+      if (!currentFilters[columnName]) return;
+      currentFilters[columnName].filterValue = value.toLowerCase();
+      displayTable(currentTableData);
     }
 
     // Tablo sıralama
@@ -1415,48 +1465,6 @@ function createList() {
       alert('Tablo başarıyla kaydedildi!');
     }
 
-    // displayTable fonksiyonu
-    function displayTable(data) {
-      const container = document.getElementById('table-container');
-      if (!data || data.length === 0) {
-        container.innerHTML = '<p>Gösterilecek veri bulunamadı.</p>';
-        return;
-      }
-
-      let filteredData = filterData(data);
-      filteredData = sortData(filteredData);
-
-      if (filteredData.length <= 1) {
-        container.innerHTML = '<p>Seçili sütunlarda veri bulunamadı.</p>';
-        return;
-      }
-
-      let tableHTML = '<table><thead><tr>';
-
-      data[0].forEach(header => {
-        if (currentFilters[header]) {
-          const isSorted = currentSort.column === header;
-          const sortClass = isSorted ? `sort-${currentSort.direction}` : '';
-          tableHTML += `<th class="${sortClass}" tabindex="0" role="columnheader" aria-sort="${
-            isSorted ? (currentSort.direction === 'asc' ? 'ascending' : 'descending') : 'none'
-          }" onclick="sortTable('${header}')" onkeydown="if(event.key==='Enter'){sortTable('${header}')}" >${escapeHtml(header)}</th>`;
-        }
-      });
-
-      tableHTML += '</tr></thead><tbody>';
-
-      for (let i = 1; i < filteredData.length; i++) {
-        tableHTML += '<tr>';
-        filteredData[i].forEach((cell, colIndex) => {
-          tableHTML += `<td ondblclick="makeCellEditable(this, ${i}, ${colIndex})">${escapeHtml(cell || '')}</td>`;
-        });
-        tableHTML += '</tr>';
-      }
-
-      tableHTML += '</tbody></table>';
-      container.innerHTML = tableHTML;
-    }
-
     // Hücreyi çift tıklayınca düzenlenebilir yap
     function makeCellEditable(td, rowIndex, colIndex) {
       if (td.querySelector('input')) return;
@@ -1486,4 +1494,8 @@ function createList() {
     }
   </script>
 </body>
+</html>
+    
+  </body>
+  
 </html>
