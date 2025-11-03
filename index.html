@@ -578,11 +578,40 @@
         <div class="action-buttons">
           <button class="btn btn-primary" onclick="showCreateListModal('stock')">＋ Yeni Stok Listesi Oluştur</button>
           <button class="btn btn-primary" onclick="showCreateListModal('employee')">＋ Yeni Çalışan Listesi Oluştur</button>
+          <!-- Ana sayfa container divinin sonuna veya body sonuna ekleyin -->
+<button id="goto-department-page" aria-label="Departman Yönetimi Sayfasına Git" 
+  style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    transition: background-color 0.3s ease;
+  "
+  onmouseover="this.style.backgroundColor='#1e40af'"
+  onmouseout="this.style.backgroundColor='var(--primary-color)'"
+  onclick="window.location.href='page1.html';"
+>
+  📁
+</button>
+
         </div>
 
         <h2>Stok Listelerim</h2>
         <div id="stock-lists-container" class="stock-lists" aria-live="polite" aria-label="Stok Listeleri">
           <!-- Dinamik içerik -->
+          
         </div>
 
         <h2>Çalışan Listelerim</h2>
@@ -596,6 +625,7 @@
         <div class="navigation" role="navigation" aria-label="Sayfa Navigasyonu">
           <button class="btn btn-secondary" onclick="goBack()">← Geri</button>
           <button class="btn btn-danger" onclick="closeList()">✕ Kapat</button>
+          
         </div>
 
         <header>
@@ -611,6 +641,7 @@
           <button class="btn btn-primary" onclick="document.getElementById('word-file').click()">📝 Word Dokümanı Ekle</button>
 
           <button class="btn btn-success" onclick="takeScreenshot()">📸 Ekran Görüntüsü Al</button>
+          
         </div>
 
         <div class="action-buttons" style="margin-bottom: 1rem; gap: 1rem;">
@@ -659,6 +690,7 @@
       <div style="display: flex; gap: 1rem; justify-content: flex-end;">
         <button class="btn btn-primary" onclick="createList()">Oluştur</button>
         <button class="btn btn-secondary" onclick="hideModal('create-list-modal')">İptal</button>
+        
       </div>
     </div>
   </div>
@@ -803,6 +835,7 @@
       document.getElementById('create-list-title').textContent = title;
       document.getElementById('list-name').value = '';
       showModal('create-list-modal');
+      
     }
 
     // Yeni liste oluşturma
