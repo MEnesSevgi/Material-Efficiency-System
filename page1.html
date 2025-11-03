@@ -1,16 +1,4 @@
-
 <!DOCTYPE html>
-<html lang="en">
-
-  <head>
-    <meta charset="UTF-8">
-    <title>Departman ve Başarılı Çalışan Yönetimi</title>
-    
-
-  </head>
-    
-  <body>
-  <!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
@@ -324,6 +312,10 @@
             <label for="error-date">Tarih</label>
             <input type="date" id="error-date" name="error-date" required aria-required="true" />
           </div>
+          <div style="flex: 1 1 300px; min-width: 300px;">
+            <label for="error-note-input">Hata Notu</label>
+            <input type="text" id="error-note-input" name="error-note-input" placeholder="Hata ile ilgili not giriniz" autocomplete="off" required aria-required="true" />
+          </div>
           <div style="flex: 1 1 100px; min-width: 100px; align-self: flex-end;">
             <button id="add-error-btn" class="btn btn-danger" aria-label="Hata Ekle" type="submit">＋ Hata Ekle</button>
           </div>
@@ -337,6 +329,7 @@
             <th scope="col">Departman</th>
             <th scope="col">Çalışan Adı</th>
             <th scope="col">Tarih</th>
+            <th scope="col">Hata Notu</th>
             <th scope="col" class="actions-cell">İşlem</th>
           </tr>
         </thead>
@@ -361,7 +354,7 @@
       <button id="error-export-btn" class="btn btn-success" aria-label="Hata Kayıtlarını Belge Olarak Üret">📄 Hata Kayıtlarını Belge Üret</button>
 
       <div id="error-note" aria-live="polite">
-        * Hatalar departman, çalışan adı ve tarih ile kayıt altına alınır.
+        * Hatalar departman, çalışan adı, tarih ve hata notu ile kayıt altına alınır.
       </div>
     </section>
 
@@ -466,6 +459,7 @@
           <td>${escapeHtml(item.department)}</td>
           <td>${escapeHtml(item.employee)}</td>
           <td>${escapeHtml(item.date)}</td>
+          <td>${escapeHtml(item.note)}</td>
           <td class="actions-cell">
             <button class="btn btn-danger" aria-label="Hatayı Sil" onclick="deleteError(${index})">Sil</button>
           </td>
@@ -474,7 +468,7 @@
       });
       if (data.length === 0) {
         const tr = document.createElement('tr');
-        tr.innerHTML = '<td colspan="4" style="text-align:center; color: var(--secondary-color); font-style: italic;">Henüz hiç hata kaydı yok.</td>';
+        tr.innerHTML = '<td colspan="5" style="text-align:center; color: var(--secondary-color); font-style: italic;">Henüz hiç hata kaydı yok.</td>';
         tbody.appendChild(tr);
       }
     }
@@ -482,19 +476,27 @@
       const deptInput = document.getElementById('error-department');
       const empInput = document.getElementById('error-employee');
       const dateInput = document.getElementById('error-date');
+      const noteInput = document.getElementById('error-note-input');
+
       const department = deptInput.value.trim();
       const employee = empInput.value.trim();
       const date = dateInput.value;
-      if (!department || !employee || !date) {
-        alert('Lütfen departman, çalışan adı ve tarih bilgilerini eksiksiz giriniz.');
+      const note = noteInput.value.trim();
+
+      if (!department || !employee || !date || !note) {
+        alert('Lütfen departman, çalışan adı, tarih ve hata notu bilgilerini eksiksiz giriniz.');
         return;
       }
+
       const data = JSON.parse(localStorage.getItem(ERROR_STORAGE_KEY) || '[]');
-      data.push({ department, employee, date });
+      data.push({ department, employee, date, note });
       localStorage.setItem(ERROR_STORAGE_KEY, JSON.stringify(data));
+
       deptInput.value = '';
       empInput.value = '';
       dateInput.value = '';
+      noteInput.value = '';
+
       loadErrors();
     }
     function deleteError(index) {
@@ -677,7 +679,7 @@
           <p><strong>Ay/Yıl:</strong> ${monthNames[month-1]} / ${year}</p>
           <table>
             <thead>
-              <tr><th>Departman</th><th>Çalışan Adı</th><th>Tarih</th></tr>
+              <tr><th>Departman</th><th>Çalışan Adı</th><th>Tarih</th><th>Hata Notu</th></tr>
             </thead>
             <tbody>
       `;
@@ -687,6 +689,7 @@
             <td>${escapeHtml(item.department)}</td>
             <td>${escapeHtml(item.employee)}</td>
             <td>${escapeHtml(item.date)}</td>
+            <td>${escapeHtml(item.note)}</td>
           </tr>
         `;
       });
@@ -708,8 +711,4 @@
     }
   </script>
 </body>
-</html>
-    
-  </body>
-  
 </html>
