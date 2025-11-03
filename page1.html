@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Departman ve Başarılı Çalışan Yönetimi</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Departman ve Başarılı Çalışan Yönetimi</title>
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --primary-hover: #1e40af;
+      --secondary-color: #64748b;
+      --accent-color: #f1f5f9;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --border-color: #e2e8f0;
+      --text-color: #334155;
+      --bg-color: #f8fafc;
+      --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg-color);
+      font-family: var(--font-family);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+    }
+
+    main {
+      background: white;
+      max-width: 700px;
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      padding: 30px 40px;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      text-align: center;
+      user-select: none;
+    }
+
+    form {
+      margin-bottom: 2rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 1rem;
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 8px var(--primary-color);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease, transform 0.15s ease;
+      color: white;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .btn-danger {
+      background-color: var(--danger-color);
+    }
+
+    .btn-danger:hover,
+    .btn-danger:focus {
+      background-color: #b91c1c;
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .btn-success {
+      background-color: var(--success-color);
+    }
+
+    .btn-success:hover,
+    .btn-success:focus {
+      background-color: #0f766e;
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    thead {
+      background-color: var(--accent-color);
+    }
+
+    th, td {
+      padding: 14px 18px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 1rem;
+    }
+
+    th {
+      font-weight: 700;
+      user-select: none;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background-color: #e0e7ff;
+    }
+
+    .actions-cell {
+      width: 80px;
+      text-align: center;
+    }
+
+    /* Sağ alt köşedeki geri dönüş butonu */
+    #back-to-main-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    #back-to-main-btn:hover,
+    #back-to-main-btn:focus {
+      background-color: var(--primary-hover);
+      outline: none;
+      transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      main {
+        padding: 20px 25px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main role="main" aria-label="Departman ve Başarılı Çalışan Yönetimi">
+    <h1>Departman ve Başarılı Çalışan Yönetimi</h1>
+
+    <form id="add-department-form" aria-describedby="form-desc" novalidate>
+      <p id="form-desc" style="color: var(--secondary-color); margin-bottom: 1rem;">
+        Yeni departman ve başarılı çalışan adı girip "Departman Ekle" butonuna basınız.
+      </p>
+
+      <label for="department-name">Departman Adı</label>
+      <input type="text" id="department-name" name="department-name" placeholder="Örn: İnsan Kaynakları" required aria-required="true" autocomplete="off" />
+
+      <label for="employee-name" style="margin-top: 1rem;">Başarılı Çalışan Adı</label>
+      <input type="text" id="employee-name" name="employee-name" placeholder="Örn: Ahmet Yılmaz" required aria-required="true" autocomplete="off" />
+
+      <button type="submit" class="btn btn-primary" style="margin-top: 1.5rem;" aria-label="Departman Ekle">＋ Departman Ekle</button>
+    </form>
+
+    <section aria-label="Eklenen Departmanlar">
+      <table aria-live="polite" aria-relevant="all" aria-describedby="departments-desc" id="departments-table" role="table">
+        <caption id="departments-desc" class="sr-only">Eklenen departmanlar ve başarılı çalışanlar listesi</caption>
+        <thead>
+          <tr>
+            <th scope="col">Departman</th>
+            <th scope="col">Başarılı Çalışan</th>
+            <th scope="col" class="actions-cell">İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="departments-tbody">
+          <!-- Dinamik içerik -->
+        </tbody>
+      </table>
+    </section>
+
+    <form id="export-form" aria-label="Belge Üretme Formu" novalidate>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem;">
+        <div style="flex: 1 1 150px; min-width: 150px;">
+          <label for="select-year">Yıl Seçiniz</label>
+          <select id="select-year" required aria-required="true" aria-describedby="year-desc"></select>
+          <small id="year-desc" style="color: var(--secondary-color); font-size: 0.85rem;">Belge için yıl seçin</small>
+        </div>
+
+        <div style="flex: 1 1 150px; min-width: 150px;">
+          <label for="select-month">Ay Seçiniz</label>
+          <select id="select-month" required aria-required="true" aria-describedby="month-desc"></select>
+          <small id="month-desc" style="color: var(--secondary-color); font-size: 0.85rem;">Belge için ay seçin</small>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-success" style="margin-top: 1.5rem;" aria-label="Belge Üret">📄 Belge Üret</button>
+    </form>
+  </main>
+
+  <!-- Ana sayfaya dönüş butonu -->
+  <button id="back-to-main-btn" aria-label="Ana Sayfaya Dön" title="Ana Sayfaya Dön" 
+    onclick="window.location.href='index.html'">
+    ←
+  </button>
+
+  <script>
+    const STORAGE_KEY = 'departments_data';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDepartments();
+      populateYearMonthSelectors();
+
+      document.getElementById('add-department-form').addEventListener('submit', e => {
+        e.preventDefault();
+        addDepartment();
+      });
+
+      document.getElementById('export-form').addEventListener('submit', e => {
+        e.preventDefault();
+        generateDocument();
+      });
+    });
+
+    function loadDepartments() {
+      const tbody = document.getElementById('departments-tbody');
+      tbody.innerHTML = '';
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+      data.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escapeHtml(item.department)}</td>
+          <td>${escapeHtml(item.employee)}</td>
+          <td class="actions-cell">
+            <button class="btn btn-danger" aria-label="Departmanı Sil" onclick="deleteDepartment(${index})">Sil</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if(data.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="3" style="text-align:center; color: var(--secondary-color); font-style: italic;">Henüz hiç departman eklenmemiş.</td>';
+        tbody.appendChild(tr);
+      }
+    }
+
+    function addDepartment() {
+      const deptInput = document.getElementById('department-name');
+      const empInput = document.getElementById('employee-name');
+
+      const department = deptInput.value.trim();
+      const employee = empInput.value.trim();
+
+      if (!department || !employee) {
+        alert('Lütfen hem departman hem de çalışan adını giriniz.');
+        return;
+      }
+
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+      if (data.some(d => d.department.toLowerCase() === department.toLowerCase())) {
+        alert('Bu departman zaten eklenmiş.');
+        return;
+      }
+
+      data.push({ department, employee });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+      deptInput.value = '';
+      empInput.value = '';
+      deptInput.focus();
+
+      loadDepartments();
+    }
+
+    function deleteDepartment(index) {
+      if (!confirm('Bu departmanı silmek istediğinize emin misiniz?')) return;
+
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      data.splice(index, 1);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      loadDepartments();
+    }
+
+    function populateYearMonthSelectors() {
+      const yearSelect = document.getElementById('select-year');
+      const monthSelect = document.getElementById('select-month');
+
+      const currentYear = new Date().getFullYear();
+      for(let y = currentYear - 10; y <= currentYear + 10; y++) {
+        const option = document.createElement('option');
+        option.value = y;
+        option.textContent = y;
+        if(y === currentYear) option.selected = true;
+        yearSelect.appendChild(option);
+      }
+
+      const months = [
+        'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+        'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+      ];
+
+      months.forEach((m, i) => {
+        const option = document.createElement('option');
+        option.value = i + 1;
+        option.textContent = m;
+        if(i === new Date().getMonth()) option.selected = true;
+        monthSelect.appendChild(option);
+      });
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text
+        .toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function generateDocument() {
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      if (data.length === 0) {
+        alert('Önce en az bir departman eklemelisiniz.');
+        return;
+      }
+
+      const year = document.getElementById('select-year').value;
+      const month = document.getElementById('select-month').value;
+      if (!year || !month) {
+        alert('Lütfen yıl ve ay seçiniz.');
+        return;
+      }
+
+      const monthNames = [
+        'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+        'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+      ];
+
+      let htmlContent = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office'
+              xmlns:w='urn:schemas-microsoft-com:office:word'
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><title>Başarılı Çalışanlar - ${year} ${monthNames[month-1]}</title>
+          <style>
+            table {border-collapse:collapse; width:100%;}
+            th, td {border:1px solid #000; padding:8px; text-align:left;}
+            th {background:#2563eb; color:#fff;}
+            body {font-family: var(--font-family), Arial, sans-serif;}
+          </style>
+        </head>
+        <body>
+          <h2>Başarılı Çalışanlar Listesi</h2>
+          <p><strong>Ay/Yıl:</strong> ${monthNames[month-1]} / ${year}</p>
+          <table>
+            <thead>
+              <tr><th>Departman</th><th>Başarılı Çalışan</th></tr>
+            </thead>
+            <tbody>
+      `;
+
+      data.forEach(item => {
+        htmlContent += `
+          <tr>
+            <td>${escapeHtml(item.department)}</td>
+            <td>${escapeHtml(item.employee)}</td>
+          </tr>
+        `;
+      });
+
+      htmlContent += `
+            </tbody>
+          </table>
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Basarili_Calisanlar_${year}_${month}.doc`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
