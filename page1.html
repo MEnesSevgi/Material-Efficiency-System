@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -28,12 +29,10 @@
       --bg-color: #f8fafc;
       --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
     /* Reset */
     *, *::before, *::after {
       box-sizing: border-box;
     }
-
     body {
       margin: 0;
       background-color: var(--bg-color);
@@ -45,7 +44,6 @@
       align-items: flex-start;
       padding: 40px 20px;
     }
-
     main {
       background: white;
       max-width: 700px;
@@ -55,7 +53,6 @@
       padding: 30px 40px;
       position: relative;
     }
-
     h1 {
       font-size: 2.6rem;
       color: var(--primary-color);
@@ -63,19 +60,17 @@
       text-align: center;
       user-select: none;
     }
-
     form {
       margin-bottom: 2rem;
     }
-
     label {
       display: block;
       font-weight: 600;
       margin-bottom: 0.5rem;
       font-size: 1rem;
     }
-
     input[type="text"],
+    input[type="date"],
     select {
       width: 100%;
       padding: 12px 14px;
@@ -84,14 +79,13 @@
       border-radius: 10px;
       transition: border-color 0.3s ease;
     }
-
     input[type="text"]:focus,
+    input[type="date"]:focus,
     select:focus {
       outline: none;
       border-color: var(--primary-color);
       box-shadow: 0 0 8px var(--primary-color);
     }
-
     .btn {
       display: inline-flex;
       align-items: center;
@@ -106,40 +100,33 @@
       transition: background-color 0.3s ease, transform 0.15s ease;
       color: white;
     }
-
     .btn-primary {
       background-color: var(--primary-color);
     }
-
     .btn-primary:hover,
     .btn-primary:focus {
       background-color: var(--primary-hover);
       transform: translateY(-2px);
       outline: none;
     }
-
     .btn-danger {
       background-color: var(--danger-color);
     }
-
     .btn-danger:hover,
     .btn-danger:focus {
       background-color: #b91c1c;
       transform: translateY(-2px);
       outline: none;
     }
-
     .btn-success {
       background-color: var(--success-color);
     }
-
     .btn-success:hover,
     .btn-success:focus {
       background-color: #0f766e;
       transform: translateY(-2px);
       outline: none;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
@@ -148,36 +135,29 @@
       border-radius: 12px;
       overflow: hidden;
     }
-
     thead {
       background-color: var(--accent-color);
     }
-
     th, td {
       padding: 14px 18px;
       text-align: left;
       border-bottom: 1px solid var(--border-color);
       font-size: 1rem;
     }
-
     th {
       font-weight: 700;
       user-select: none;
     }
-
     tbody tr:last-child td {
       border-bottom: none;
     }
-
     tbody tr:hover {
       background-color: #e0e7ff;
     }
-
     .actions-cell {
       width: 80px;
       text-align: center;
     }
-
     /* Sağ alt köşedeki geri dönüş butonu */
     #back-to-main-btn {
       position: fixed;
@@ -199,28 +179,78 @@
       transition: background-color 0.3s ease;
       user-select: none;
     }
-
     #back-to-main-btn:hover,
     #back-to-main-btn:focus {
       background-color: var(--primary-hover);
       outline: none;
       transform: translateY(-2px);
     }
-
     /* Responsive */
     @media (max-width: 480px) {
       main {
         padding: 20px 25px;
       }
-
       h1 {
         font-size: 2rem;
       }
-
       .btn {
         width: 100%;
         justify-content: center;
       }
+    }
+    /* Hata kısmı stilleri */
+    #error-section {
+      margin-top: 3rem;
+      padding: 20px;
+      border: 2px solid var(--danger-color);
+      border-radius: 12px;
+      background-color: #fee2e2;
+      color: var(--danger-color);
+      user-select: none;
+    }
+    #error-section h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+    #error-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    #error-table thead {
+      background-color: #fecaca;
+    }
+    #error-table th, #error-table td {
+      padding: 12px 16px;
+      border: 1px solid var(--danger-color);
+      font-size: 1rem;
+      color: var(--danger-color);
+    }
+    #error-note {
+      margin-top: 1rem;
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--danger-color);
+      background-color: #fef2f2;
+      padding: 10px 15px;
+      border-radius: 8px;
+      user-select: none;
+    }
+    #error-export-btn {
+      margin-top: 1rem;
+    }
+    #error-date-selectors {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      align-items: flex-end;
+    }
+    #error-date-selectors > div {
+      flex: 1 1 150px;
+      min-width: 150px;
     }
   </style>
 </head>
@@ -275,6 +305,66 @@
 
       <button type="submit" class="btn btn-success" style="margin-top: 1.5rem;" aria-label="Belge Üret">📄 Belge Üret</button>
     </form>
+
+    <!-- Hata kısmı -->
+    <section id="error-section" aria-label="Hata Kayıtları">
+      <h2>Hata Kayıtları</h2>
+
+      <form id="add-error-form" novalidate>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+          <div style="flex: 1 1 200px; min-width: 200px;">
+            <label for="error-department">Departman</label>
+            <input type="text" id="error-department" name="error-department" placeholder="Hata departmanı giriniz" autocomplete="off" required aria-required="true" />
+          </div>
+          <div style="flex: 1 1 200px; min-width: 200px;">
+            <label for="error-employee">Çalışan Adı</label>
+            <input type="text" id="error-employee" name="error-employee" placeholder="Hata çalışan adı giriniz" autocomplete="off" required aria-required="true" />
+          </div>
+          <div style="flex: 1 1 200px; min-width: 200px;">
+            <label for="error-date">Tarih</label>
+            <input type="date" id="error-date" name="error-date" required aria-required="true" />
+          </div>
+          <div style="flex: 1 1 100px; min-width: 100px; align-self: flex-end;">
+            <button id="add-error-btn" class="btn btn-danger" aria-label="Hata Ekle" type="submit">＋ Hata Ekle</button>
+          </div>
+        </div>
+      </form>
+
+      <table id="error-table" role="table" aria-live="polite" aria-relevant="all" aria-describedby="error-desc">
+        <caption id="error-desc" class="sr-only">Kayıtlı hata listesi</caption>
+        <thead>
+          <tr>
+            <th scope="col">Departman</th>
+            <th scope="col">Çalışan Adı</th>
+            <th scope="col">Tarih</th>
+            <th scope="col" class="actions-cell">İşlem</th>
+          </tr>
+        </thead>
+        <tbody id="error-tbody">
+          <!-- Hata kayıtları buraya gelecek -->
+        </tbody>
+      </table>
+
+      <div id="error-date-selectors">
+        <div>
+          <label for="error-select-year">Yıl Seçiniz</label>
+          <select id="error-select-year" aria-describedby="error-year-desc"></select>
+          <small id="error-year-desc" style="color: var(--secondary-color); font-size: 0.85rem;">Hata belgesi için yıl seçin</small>
+        </div>
+        <div>
+          <label for="error-select-month">Ay Seçiniz</label>
+          <select id="error-select-month" aria-describedby="error-month-desc"></select>
+          <small id="error-month-desc" style="color: var(--secondary-color); font-size: 0.85rem;">Hata belgesi için ay seçin</small>
+        </div>
+      </div>
+
+      <button id="error-export-btn" class="btn btn-success" aria-label="Hata Kayıtlarını Belge Olarak Üret">📄 Hata Kayıtlarını Belge Üret</button>
+
+      <div id="error-note" aria-live="polite">
+        * Hatalar departman, çalışan adı ve tarih ile kayıt altına alınır.
+      </div>
+    </section>
+
   </main>
 
   <!-- Ana sayfaya dönüş butonu -->
@@ -285,10 +375,13 @@
 
   <script>
     const STORAGE_KEY = 'departments_data';
+    const ERROR_STORAGE_KEY = 'errors_data';
 
     document.addEventListener('DOMContentLoaded', () => {
       loadDepartments();
+      loadErrors();
       populateYearMonthSelectors();
+      populateErrorYearMonthSelectors();
 
       document.getElementById('add-department-form').addEventListener('submit', e => {
         e.preventDefault();
@@ -299,13 +392,23 @@
         e.preventDefault();
         generateDocument();
       });
+
+      document.getElementById('add-error-form').addEventListener('submit', e => {
+        e.preventDefault();
+        addError();
+      });
+
+      document.getElementById('error-export-btn').addEventListener('click', e => {
+        e.preventDefault();
+        generateErrorDocument();
+      });
     });
 
+    // Departman işlemleri
     function loadDepartments() {
       const tbody = document.getElementById('departments-tbody');
       tbody.innerHTML = '';
       const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-
       data.forEach((item, index) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -317,56 +420,95 @@
         `;
         tbody.appendChild(tr);
       });
-
-      if(data.length === 0) {
+      if (data.length === 0) {
         const tr = document.createElement('tr');
         tr.innerHTML = '<td colspan="3" style="text-align:center; color: var(--secondary-color); font-style: italic;">Henüz hiç departman eklenmemiş.</td>';
         tbody.appendChild(tr);
       }
     }
-
     function addDepartment() {
       const deptInput = document.getElementById('department-name');
       const empInput = document.getElementById('employee-name');
-
       const department = deptInput.value.trim();
       const employee = empInput.value.trim();
-
       if (!department || !employee) {
         alert('Lütfen hem departman hem de çalışan adını giriniz.');
         return;
       }
-
       const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-
       if (data.some(d => d.department.toLowerCase() === department.toLowerCase())) {
         alert('Bu departman zaten eklenmiş.');
         return;
       }
-
       data.push({ department, employee });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-
       deptInput.value = '';
       empInput.value = '';
       deptInput.focus();
-
       loadDepartments();
     }
-
     function deleteDepartment(index) {
       if (!confirm('Bu departmanı silmek istediğinize emin misiniz?')) return;
-
       const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
       data.splice(index, 1);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       loadDepartments();
     }
 
+    // Hata işlemleri
+    function loadErrors() {
+      const tbody = document.getElementById('error-tbody');
+      tbody.innerHTML = '';
+      const data = JSON.parse(localStorage.getItem(ERROR_STORAGE_KEY) || '[]');
+      data.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escapeHtml(item.department)}</td>
+          <td>${escapeHtml(item.employee)}</td>
+          <td>${escapeHtml(item.date)}</td>
+          <td class="actions-cell">
+            <button class="btn btn-danger" aria-label="Hatayı Sil" onclick="deleteError(${index})">Sil</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      if (data.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="4" style="text-align:center; color: var(--secondary-color); font-style: italic;">Henüz hiç hata kaydı yok.</td>';
+        tbody.appendChild(tr);
+      }
+    }
+    function addError() {
+      const deptInput = document.getElementById('error-department');
+      const empInput = document.getElementById('error-employee');
+      const dateInput = document.getElementById('error-date');
+      const department = deptInput.value.trim();
+      const employee = empInput.value.trim();
+      const date = dateInput.value;
+      if (!department || !employee || !date) {
+        alert('Lütfen departman, çalışan adı ve tarih bilgilerini eksiksiz giriniz.');
+        return;
+      }
+      const data = JSON.parse(localStorage.getItem(ERROR_STORAGE_KEY) || '[]');
+      data.push({ department, employee, date });
+      localStorage.setItem(ERROR_STORAGE_KEY, JSON.stringify(data));
+      deptInput.value = '';
+      empInput.value = '';
+      dateInput.value = '';
+      loadErrors();
+    }
+    function deleteError(index) {
+      if (!confirm('Bu hatayı silmek istediğinize emin misiniz?')) return;
+      const data = JSON.parse(localStorage.getItem(ERROR_STORAGE_KEY) || '[]');
+      data.splice(index, 1);
+      localStorage.setItem(ERROR_STORAGE_KEY, JSON.stringify(data));
+      loadErrors();
+    }
+
+    // Yıl ve ay seçimleri (başarılı çalışanlar)
     function populateYearMonthSelectors() {
       const yearSelect = document.getElementById('select-year');
       const monthSelect = document.getElementById('select-month');
-
       const currentYear = new Date().getFullYear();
       for(let y = currentYear - 10; y <= currentYear + 10; y++) {
         const option = document.createElement('option');
@@ -375,12 +517,10 @@
         if(y === currentYear) option.selected = true;
         yearSelect.appendChild(option);
       }
-
       const months = [
         'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
         'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
       ];
-
       months.forEach((m, i) => {
         const option = document.createElement('option');
         option.value = i + 1;
@@ -390,6 +530,32 @@
       });
     }
 
+    // Yıl ve ay seçimleri (hata kayıtları)
+    function populateErrorYearMonthSelectors() {
+      const yearSelect = document.getElementById('error-select-year');
+      const monthSelect = document.getElementById('error-select-month');
+      const currentYear = new Date().getFullYear();
+      for(let y = currentYear - 10; y <= currentYear + 10; y++) {
+        const option = document.createElement('option');
+        option.value = y;
+        option.textContent = y;
+        if(y === currentYear) option.selected = true;
+        yearSelect.appendChild(option);
+      }
+      const months = [
+        'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+        'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+      ];
+      months.forEach((m, i) => {
+        const option = document.createElement('option');
+        option.value = i + 1;
+        option.textContent = m;
+        if(i === new Date().getMonth()) option.selected = true;
+        monthSelect.appendChild(option);
+      });
+    }
+
+    // HTML karakter kaçış
     function escapeHtml(text) {
       if (!text) return '';
       return text
@@ -401,25 +567,23 @@
         .replace(/'/g, '&#039;');
     }
 
+    // Başarılı çalışanlar için belge üretme
     function generateDocument() {
       const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
       if (data.length === 0) {
         alert('Önce en az bir departman eklemelisiniz.');
         return;
       }
-
       const year = document.getElementById('select-year').value;
       const month = document.getElementById('select-month').value;
       if (!year || !month) {
         alert('Lütfen yıl ve ay seçiniz.');
         return;
       }
-
       const monthNames = [
         'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
         'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
       ];
-
       let htmlContent = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office'
               xmlns:w='urn:schemas-microsoft-com:office:word'
@@ -441,7 +605,6 @@
             </thead>
             <tbody>
       `;
-
       data.forEach(item => {
         htmlContent += `
           <tr>
@@ -450,19 +613,94 @@
           </tr>
         `;
       });
-
       htmlContent += `
             </tbody>
           </table>
         </body>
         </html>
       `;
-
       const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = `Basarili_Calisanlar_${year}_${month}.doc`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    // Hata kayıtları için belge üretme (seçilen yıl ve aya göre filtreli)
+    function generateErrorDocument() {
+      const data = JSON.parse(localStorage.getItem(ERROR_STORAGE_KEY) || '[]');
+      if (data.length === 0) {
+        alert('Önce en az bir hata kaydı eklemelisiniz.');
+        return;
+      }
+      const year = document.getElementById('error-select-year').value;
+      const month = document.getElementById('error-select-month').value;
+      if (!year || !month) {
+        alert('Lütfen hata belgesi için yıl ve ay seçiniz.');
+        return;
+      }
+      const monthNames = [
+        'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+        'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+      ];
+
+      // Seçilen yıl ve aya göre filtrele (date string ISO format yyyy-mm-dd)
+      const filteredData = data.filter(item => {
+        if(!item.date) return false;
+        const itemDate = new Date(item.date);
+        return itemDate.getFullYear() === Number(year) && (itemDate.getMonth() + 1) === Number(month);
+      });
+
+      if (filteredData.length === 0) {
+        alert(`${year} yılı ${monthNames[month-1]} ayı için hata kaydı bulunamadı.`);
+        return;
+      }
+
+      let htmlContent = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office'
+              xmlns:w='urn:schemas-microsoft-com:office:word'
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><title>Hata Kayıtları - ${year} ${monthNames[month-1]}</title>
+          <style>
+            table {border-collapse:collapse; width:100%;}
+            th, td {border:1px solid #000; padding:8px; text-align:left;}
+            th {background:#ef4444; color:#fff;}
+            body {font-family: var(--font-family), Arial, sans-serif;}
+          </style>
+        </head>
+        <body>
+          <h2>Hata Kayıtları Listesi</h2>
+          <p><strong>Ay/Yıl:</strong> ${monthNames[month-1]} / ${year}</p>
+          <table>
+            <thead>
+              <tr><th>Departman</th><th>Çalışan Adı</th><th>Tarih</th></tr>
+            </thead>
+            <tbody>
+      `;
+      filteredData.forEach(item => {
+        htmlContent += `
+          <tr>
+            <td>${escapeHtml(item.department)}</td>
+            <td>${escapeHtml(item.employee)}</td>
+            <td>${escapeHtml(item.date)}</td>
+          </tr>
+        `;
+      });
+      htmlContent += `
+            </tbody>
+          </table>
+        </body>
+        </html>
+      `;
+      const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Hata_Kayitlari_${year}_${month}.doc`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
